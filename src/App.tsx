@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import GradientTypographyDemo from './snippets/gradientTypography/demo/DemoApp';
+import GlassTypographyDemo from './snippets/glassTypography/demo/DemoApp';
 import './App.css';
 
 const snippets = [
@@ -10,8 +11,14 @@ const snippets = [
     path: '/gradientTypography',
     component: GradientTypographyDemo,
     description: 'Beautiful gradient text effects with brand tokens and animations'
+  },
+  {
+    id: 'glassTypography',
+    name: 'Glass Typography',
+    path: '/glassTypography',
+    component: GlassTypographyDemo,
+    description: 'Stunning glassmorphism text effects with brand tokens and liquid glass variants'
   }
-  // Future snippets will be added here
 ];
 
 const NavigationBar: React.FC = () => {

@@ -12,6 +12,7 @@ interface ConfigState {
   animationDuration: string;
   shadow: 'none' | 'subtle' | 'medium' | 'hard';
   glow: boolean;
+  textAlign: 'left' | 'center' | 'right';
   brand: BrandName;
 }
 
@@ -26,6 +27,7 @@ const DemoApp: React.FC = () => {
     animationDuration: '3s',
     shadow: 'none',
     glow: false,
+    textAlign: 'center',
     brand: 'iqos',
   });
 
@@ -64,6 +66,7 @@ const DemoApp: React.FC = () => {
       animationDuration: config.animationDuration,
       shadow: config.shadow,
       glow: config.glow.toString(),
+      textAlign: config.textAlign,
       brand: config.brand,
     });
 
@@ -146,6 +149,7 @@ const DemoApp: React.FC = () => {
           animationDuration={config.animationDuration}
           shadow={config.shadow}
           glow={config.glow}
+          textAlign={config.textAlign}
           brand={config.brand}
         >
           {config.text}
@@ -350,6 +354,19 @@ const DemoApp: React.FC = () => {
               Glow Effect
             </label>
           </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '5px' }}>Text Alignment:</label>
+            <select
+              value={config.textAlign}
+              onChange={(e) => setConfig(prev => ({ ...prev, textAlign: e.target.value as 'left' | 'center' | 'right' }))}
+              style={{ width: '100%', padding: '8px' }}
+            >
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
         </div>
 
         <div>
@@ -367,6 +384,7 @@ import { GradientText } from 'aem-snippets/gradientTypography';
   direction="${config.direction}"
   fontSizeToken="${config.fontSizeToken}"
   brand="${config.brand}"
+  textAlign="${config.textAlign}"
   animate={${config.animate}}
   animationDuration="${config.animationDuration}"
   shadow="${config.shadow}"

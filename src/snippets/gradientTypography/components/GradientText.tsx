@@ -11,6 +11,7 @@ export interface GradientTextProps {
   animationDuration?: string;
   shadow?: 'none' | 'subtle' | 'medium' | 'hard';
   glow?: boolean;
+  textAlign?: 'left' | 'center' | 'right';
   className?: string;
   style?: React.CSSProperties;
   brand?: BrandName;
@@ -26,6 +27,7 @@ export const GradientText: React.FC<GradientTextProps> = ({
   animationDuration = '3s',
   shadow = 'none',
   glow = false,
+  textAlign = 'left',
   className = '',
   style = {},
   brand = 'iqos',
@@ -45,6 +47,11 @@ export const GradientText: React.FC<GradientTextProps> = ({
     fontFamily: effectiveFontFamily,
     display: 'inline-block',
     ...style,
+  };
+
+  const containerStyles: React.CSSProperties = {
+    textAlign,
+    width: '100%',
   };
 
   const cssClass = `gradient-text-${uniqueId}`;
@@ -119,9 +126,11 @@ export const GradientText: React.FC<GradientTextProps> = ({
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: gradientCSS }} />
-      <span className={`${cssClass} ${className}`.trim()} style={baseStyles}>
-        {children}
-      </span>
+      <div style={containerStyles}>
+        <span className={`${cssClass} ${className}`.trim()} style={baseStyles}>
+          {children}
+        </span>
+      </div>
     </>
   );
 };

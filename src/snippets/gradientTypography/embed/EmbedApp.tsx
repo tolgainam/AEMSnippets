@@ -12,6 +12,7 @@ interface EmbedConfig {
   animationDuration: string;
   shadow: 'none' | 'subtle' | 'medium' | 'hard';
   glow: boolean;
+  textAlign: 'left' | 'center' | 'right';
   brand: BrandName;
 }
 
@@ -26,6 +27,7 @@ const EmbedApp: React.FC = () => {
     animationDuration: '3s',
     shadow: 'none',
     glow: false,
+    textAlign: 'center',
     brand: 'iqos',
   });
 
@@ -80,6 +82,10 @@ const EmbedApp: React.FC = () => {
       newConfig.glow = urlParams.get('glow') === 'true';
     }
     
+    if (urlParams.has('textAlign')) {
+      newConfig.textAlign = urlParams.get('textAlign') as 'left' | 'center' | 'right' || 'center';
+    }
+    
     setConfig(prevConfig => ({ ...prevConfig, ...newConfig }));
   }, []);
 
@@ -102,6 +108,7 @@ const EmbedApp: React.FC = () => {
         animationDuration={config.animationDuration}
         shadow={config.shadow}
         glow={config.glow}
+        textAlign={config.textAlign}
         brand={config.brand}
       >
         {config.text}
