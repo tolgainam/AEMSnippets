@@ -67,7 +67,7 @@ const DemoApp: React.FC = () => {
       brand: config.brand,
     });
 
-    return `${window.location.origin}/colorTypography/embed.html?${params.toString()}`;
+    return `${window.location.origin}/AEMSnippets/gradientTypography/embed.html?${params.toString()}`;
   };
 
   const generateEmbedCode = () => {
@@ -134,7 +134,7 @@ const DemoApp: React.FC = () => {
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '40px' }}>Gradient Typography Library</h1>
+      <h1 style={{ textAlign: 'center', marginBottom: '40px' }}>AEM Snippets - Gradient Typography</h1>
       
       <div style={{ marginBottom: '40px', textAlign: 'center' }}>
         <GradientText
@@ -358,9 +358,9 @@ const DemoApp: React.FC = () => {
           <div style={{ marginBottom: '30px' }}>
             <h4>As npm package:</h4>
             <pre style={{ backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '4px', overflow: 'auto' }}>
-{`npm install gradient-typography
+{`npm install aem-snippets
 
-import { GradientText } from 'gradient-typography';
+import { GradientText } from 'aem-snippets/gradientTypography';
 
 <GradientText
   colors={${JSON.stringify(config.colors)}}

@@ -1,9 +1,9 @@
 {
-  "name": "gradient-typography",
+  "name": "aem-snippets",
   "version": "1.0.0",
-  "description": "A React component library for creating beautiful gradient typography that can be imported or embedded",
-  "main": "lib/gradient-typography.umd.js",
-  "module": "lib/gradient-typography.es.js",
+  "description": "A collection of reusable AEM snippets and components that can be imported or embedded",
+  "main": "lib/aem-snippets.umd.js",
+  "module": "lib/aem-snippets.es.js",
   "types": "lib/index.d.ts",
   "files": [
     "lib"
@@ -19,12 +19,13 @@
   },
   "keywords": [
     "react",
-    "gradient",
-    "typography",
-    "text",
-    "component",
+    "aem",
+    "snippets",
+    "components",
     "embed",
-    "iframe"
+    "iframe",
+    "gradient",
+    "typography"
   ],
   "author": "",
   "license": "MIT",

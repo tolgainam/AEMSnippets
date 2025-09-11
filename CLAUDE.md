@@ -4,9 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a React TypeScript library called `gradient-typography` that provides gradient text components with two usage modes:
+This is a React TypeScript library called `aem-snippets` that provides a collection of reusable AEM snippets and components. Each snippet has two usage modes:
 1. **npm package**: Import as a React component in other projects
 2. **iframe embed**: Standalone embeddable widget for any website
+
+### Available Snippets
+- **gradientTypography**: Gradient text effects with brand tokens, shadows, glow, and animation
 
 ## Development Commands
 
@@ -18,19 +21,22 @@ This is a React TypeScript library called `gradient-typography` that provides gr
 
 ## Architecture
 
-### Core Components
-- `src/components/GradientText.tsx` - Main React component with TypeScript props interface
-- `src/index.ts` - Library entry point for npm package exports
+### Core Structure
+- `src/index.ts` - Main library entry point for npm package exports
+- `src/snippets/` - Directory containing all snippets
 
-### Demo Application
-- `src/demo/DemoApp.tsx` - Interactive demo with live configuration and embed code generation
-- `src/main.tsx` - Demo app entry point
-- `index.html` - Demo app HTML
+### Gradient Typography Snippet (`src/snippets/gradientTypography/`)
+- `components/GradientText.tsx` - Main React component with TypeScript props interface
+- `demo/DemoApp.tsx` - Interactive demo with live configuration and embed code generation
+- `embed/EmbedApp.tsx` - Standalone app that reads URL parameters for configuration
+- `embed/embed.tsx` - Embed app entry point
+- `tokens/designTokens.ts` - Brand design tokens and typography scales
+- `styles/fonts.css` - Custom font declarations
+- `index.ts` - Snippet exports
 
-### Embed Application
-- `src/embed/EmbedApp.tsx` - Standalone app that reads URL parameters for configuration
-- `src/embed/embed.tsx` - Embed app entry point
-- `embed.html` - Embed HTML page for iframe usage
+### Build Structure
+- `index.html` - Main demo app HTML
+- `gradientTypography/embed.html` - Embed HTML page for iframe usage
 
 ### Build Configuration
 - Uses Vite for development and building

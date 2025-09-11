@@ -9,16 +9,16 @@ export default defineConfig({
     react(),
     dts({
       insertTypesEntry: true,
-      include: ['src/index.ts', 'src/components/**/*', 'src/tokens/**/*'],
-      exclude: ['src/demo/**/*', 'src/embed/**/*', 'src/main.tsx']
+      include: ['src/index.ts', 'src/snippets/**/*'],
+      exclude: ['src/snippets/**/demo/**/*', 'src/snippets/**/embed/**/*', 'src/main.tsx']
     })
   ],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'GradientTypography',
+      name: 'AEMSnippets',
       formats: ['es', 'umd'],
-      fileName: (format) => `gradient-typography.${format}.js`
+      fileName: (format) => `aem-snippets.${format}.js`
     },
     outDir: 'lib',
     rollupOptions: {

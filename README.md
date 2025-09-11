@@ -1,6 +1,11 @@
-# Gradient Typography
+# AEM Snippets
 
-A React component library for creating beautiful gradient typography that can be imported as an npm package or embedded directly into websites via iframe.
+A collection of reusable AEM snippets and components that can be imported as npm packages or embedded directly into websites via iframe.
+
+## Available Snippets
+
+### Gradient Typography
+Beautiful gradient text effects with animation support, brand tokens, and responsive design.
 
 ## Features
 
@@ -14,13 +19,15 @@ A React component library for creating beautiful gradient typography that can be
 ## Installation
 
 ```bash
-npm install gradient-typography
+npm install aem-snippets
 ```
 
 ## Usage as React Component
 
+### Gradient Typography
+
 ```jsx
-import { GradientText } from 'gradient-typography';
+import { GradientText } from 'aem-snippets/gradientTypography';
 
 function App() {
   return (

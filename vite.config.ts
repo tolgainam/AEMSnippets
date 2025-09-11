@@ -5,13 +5,13 @@ import { resolve } from 'path'
 // Demo app build configuration for GitHub Pages
 export default defineConfig({
   plugins: [react()],
-  base: '/colorTypography/',
+  base: '/AEMSnippets/',
   build: {
     outDir: 'dist',
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        embed: resolve(__dirname, 'embed.html')
+        'gradientTypography/embed': resolve(__dirname, 'gradientTypography/embed.html')
       }
     }
   }

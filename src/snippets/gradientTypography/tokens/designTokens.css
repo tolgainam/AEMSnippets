@@ -1,0 +1,310 @@
+/* Consolidated Design System Tokens CSS */
+/* This file contains all CSS custom properties and utility classes */
+
+/* ============================================================================
+   FONT FACE DECLARATIONS
+   ============================================================================ */
+
+@font-face {
+  font-family: 'IQOSW10-Regular';
+  src: url('/fonts/IQOSW10-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IQOSW10-Bold';
+  src: url('/fonts/IQOSW10-Bold.woff2') format('woff2'),
+       url('/fonts/IQOSW10-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ZYNSans_W_Rg';
+  src: url('/fonts/ZYNSans_W_Rg.woff2') format('woff2'),
+       url('/fonts/ZYNSans_W_Rg.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ZYNSans_W_XBd';
+  src: url('/fonts/ZYNSans_W_XBd.woff2') format('woff2'),
+       url('/fonts/ZYNSans_W_XBd.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================================
+   DIMENSION TOKENS - Smart Responsive (No Duplication)
+   ============================================================================ */
+
+:root {
+  /* Breakpoints */
+  --dimension-breakpoint-xs: 390px;
+  --dimension-breakpoint-xl: 1536px;
+
+  /* Spacer Tokens (same for all breakpoints) */
+  --dimension-space-0: 0px;
+  --dimension-space-1: 4px;
+  --dimension-space-2: 8px;
+  --dimension-space-3: 16px;
+  --dimension-space-4: 24px;
+  --dimension-space-5: 32px;
+  --dimension-space-6: 48px;
+  --dimension-space-7: 64px;
+  --dimension-space-8: 80px;
+  --dimension-space-9: 96px;
+  --dimension-space-10: 120px;
+
+  /* Typography Size Tokens - Default (XS) */
+  --typography-size-poster: 40px;
+  --typography-size-h1: 36px;
+  --typography-size-h2: 32px;
+  --typography-size-h3: 28px;
+  --typography-size-h4: 24px;
+  --typography-size-h5: 20px;
+  --typography-size-h6: 18px;
+  --typography-size-fs1: 36px;
+  --typography-size-fs2: 32px;
+  --typography-size-fs3: 28px;
+  --typography-size-fs4: 24px;
+  --typography-size-fs5: 20px;
+  --typography-size-fs6: 18px;
+  --typography-size-body1: 16px;
+  --typography-size-body2: 14px;
+  --typography-size-body3: 12px;
+
+  /* Typography Line Height Tokens - Default (XS) */
+  --typography-line-height-poster: 48px;
+  --typography-line-height-h1: 36px;
+  --typography-line-height-h2: 32px;
+  --typography-line-height-h3: 28px;
+  --typography-line-height-h4: 24px;
+  --typography-line-height-h5: 28px;
+  --typography-line-height-h6: 24px;
+  --typography-line-height-fs1: 44px;
+  --typography-line-height-fs2: 40px;
+  --typography-line-height-fs3: 40px;
+  --typography-line-height-fs4: 32px;
+  --typography-line-height-fs5: 28px;
+  --typography-line-height-fs6: 24px;
+  --typography-line-height-body1: 24px;
+  --typography-line-height-body2: 20px;
+  --typography-line-height-body3: 16px;
+
+  /* Container Tokens - Default (XS) */
+  --container-width-boxed: 390px;
+  --container-width-full: 390px;
+  --container-width-hug: auto;
+  --container-height-default: 480px;
+  --container-height-full: 633px;
+  --container-height-hug: auto;
+
+  /* Image Tokens - Default (XS) */
+  --image-width-full-100: 390px;
+  --image-width-full-50: 390px;
+  --image-width-boxed-100: 390px;
+  --image-width-boxed-50: 390px;
+  --image-height-full: 633px;
+  --image-height-default: 480px;
+
+  /* Bottom Margin Tokens */
+  --bottom-margin-list: 8px;
+  --bottom-margin-default: 16px;
+
+  /* Radius Tokens */
+  --radius-small: var(--dimension-space-2);
+  --radius-medium: var(--dimension-space-3);
+  --radius-large: var(--dimension-space-4);
+  --radius-button: 100px;
+
+  /* Icon Size Tokens */
+}
+
+/* XL Breakpoint Overrides - Only override what changes */
+@media (min-width: 1536px) {
+  :root {
+    /* Typography Size Tokens - XL */
+    --typography-size-poster: 96px;
+    --typography-size-h1: 64px;
+    --typography-size-h2: 56px;
+    --typography-size-h3: 42px;
+    --typography-size-h4: 32px;
+    --typography-size-h5: 28px;
+    --typography-size-h6: 24px;
+    --typography-size-fs1: 64px;
+    --typography-size-fs2: 56px;
+    --typography-size-fs3: 42px;
+    --typography-size-fs4: 32px;
+    --typography-size-fs5: 28px;
+    --typography-size-fs6: 24px;
+    /* body1, body2, body3 stay the same */
+
+    /* Typography Line Height Tokens - XL */
+    --typography-line-height-poster: 104px;
+    --typography-line-height-h1: 64px;
+    --typography-line-height-h2: 56px;
+    --typography-line-height-h3: 42px;
+    --typography-line-height-h4: 32px;
+    --typography-line-height-h5: 36px;
+    --typography-line-height-h6: 36px;
+    --typography-line-height-fs1: 72px;
+    --typography-line-height-fs2: 64px;
+    --typography-line-height-fs3: 56px;
+    --typography-line-height-fs4: 42px;
+    --typography-line-height-fs5: 40px;
+    --typography-line-height-fs6: 36px;
+    /* body1, body2, body3 stay the same */
+
+    /* Container Tokens - XL */
+    --container-width-boxed: 1536px;
+    --container-width-full: 1920px;
+    --container-height-default: 700px;
+    --container-height-full: 810px;
+
+    /* Image Tokens - XL */
+    --image-width-full-100: 1920px;
+    --image-width-full-50: 960px;
+    --image-width-boxed-100: 1536px;
+    --image-width-boxed-50: 768px;
+    --image-height-full: 810px;
+    --image-height-default: 700px;
+  }
+}
+
+/* ============================================================================
+   TYPOGRAPHY UTILITY CLASSES - Combined size and line-height
+   ============================================================================ */
+
+.text-poster { 
+  font-size: var(--typography-size-poster); 
+  line-height: var(--typography-line-height-poster); 
+}
+.text-h1 { 
+  font-size: var(--typography-size-h1); 
+  line-height: var(--typography-line-height-h1); 
+}
+.text-h2 { 
+  font-size: var(--typography-size-h2); 
+  line-height: var(--typography-line-height-h2); 
+}
+.text-h3 { 
+  font-size: var(--typography-size-h3); 
+  line-height: var(--typography-line-height-h3); 
+}
+.text-h4 { 
+  font-size: var(--typography-size-h4); 
+  line-height: var(--typography-line-height-h4); 
+}
+.text-h5 { 
+  font-size: var(--typography-size-h5); 
+  line-height: var(--typography-line-height-h5); 
+}
+.text-h6 { 
+  font-size: var(--typography-size-h6); 
+  line-height: var(--typography-line-height-h6); 
+}
+.text-fs1 { 
+  font-size: var(--typography-size-fs1); 
+  line-height: var(--typography-line-height-fs1); 
+}
+.text-fs2 { 
+  font-size: var(--typography-size-fs2); 
+  line-height: var(--typography-line-height-fs2); 
+}
+.text-fs3 { 
+  font-size: var(--typography-size-fs3); 
+  line-height: var(--typography-line-height-fs3); 
+}
+.text-fs4 { 
+  font-size: var(--typography-size-fs4); 
+  line-height: var(--typography-line-height-fs4); 
+}
+.text-fs5 { 
+  font-size: var(--typography-size-fs5); 
+  line-height: var(--typography-line-height-fs5); 
+}
+.text-fs6 { 
+  font-size: var(--typography-size-fs6); 
+  line-height: var(--typography-line-height-fs6); 
+}
+.text-body1 { 
+  font-size: var(--typography-size-body1); 
+  line-height: var(--typography-line-height-body1); 
+}
+.text-body2 { 
+  font-size: var(--typography-size-body2); 
+  line-height: var(--typography-line-height-body2); 
+}
+.text-body3 { 
+  font-size: var(--typography-size-body3); 
+  line-height: var(--typography-line-height-body3); 
+}
+
+/* ============================================================================
+   BUILDER TOOL TYPOGRAPHY CLASSES
+   ============================================================================ */
+
+.text-body-16 { 
+  font-size: 16px; 
+  line-height: 24px; 
+}
+.text-body-14 { 
+  font-size: 14px; 
+  line-height: 20px; 
+}
+.text-body-12 { 
+  font-size: 12px; 
+  line-height: 16px; 
+}
+
+/* ============================================================================
+   CONTAINER UTILITY CLASSES
+   ============================================================================ */
+
+.container-width-boxed { width: var(--container-width-boxed); }
+.container-width-full { width: var(--container-width-full); }
+.container-width-hug { width: var(--container-width-hug); }
+.container-height-default { height: var(--container-height-default); }
+.container-height-full { height: var(--container-height-full); }
+.container-height-hug { height: var(--container-height-hug); }
+
+/* ============================================================================
+   IMAGE UTILITY CLASSES
+   ============================================================================ */
+
+.image-width-full-100 { width: var(--image-width-full-100); }
+.image-width-full-50 { width: var(--image-width-full-50); }
+.image-width-boxed-100 { width: var(--image-width-boxed-100); }
+.image-width-boxed-50 { width: var(--image-width-boxed-50); }
+.image-height-full { height: var(--image-height-full); }
+.image-height-default { height: var(--image-height-default); }
+
+/* ============================================================================
+   SPACING UTILITY CLASSES
+   ============================================================================ */
+
+.space-0 { margin: var(--dimension-space-0); }
+.space-1 { margin: var(--dimension-space-1); }
+.space-2 { margin: var(--dimension-space-2); }
+.space-3 { margin: var(--dimension-space-3); }
+.space-4 { margin: var(--dimension-space-4); }
+.space-5 { margin: var(--dimension-space-5); }
+.space-6 { margin: var(--dimension-space-6); }
+.space-7 { margin: var(--dimension-space-7); }
+.space-8 { margin: var(--dimension-space-8); }
+.space-9 { margin: var(--dimension-space-9); }
+.space-10 { margin: var(--dimension-space-10); }
+
+/* ============================================================================
+   BOTTOM MARGIN UTILITY CLASSES
+   ============================================================================ */
+
+.bottom-margin-list { margin-bottom: var(--bottom-margin-list); }
+.bottom-margin-default { margin-bottom: var(--bottom-margin-default); } 
