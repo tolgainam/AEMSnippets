@@ -56,25 +56,38 @@ export const GradientText: React.FC<GradientTextProps> = ({
 
   const cssClass = `gradient-text-${uniqueId}`;
   
-  // Generate shadow CSS
+  // Generate shadow CSS using Material Design elevation shadows
   const getShadowCSS = () => {
     switch (shadow) {
       case 'subtle':
-        return 'text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);';
+        // Material elevation 1
+        return 'filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.12)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));';
       case 'medium':
-        return 'text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);';
+        // Material elevation 4
+        return 'filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.14)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.10)) drop-shadow(0 1px 10px rgba(0, 0, 0, 0.06));';
       case 'hard':
-        return 'text-shadow: 0 4px 8px rgba(0, 0, 0, 0.25), 0 8px 16px rgba(0, 0, 0, 0.15);';
+        // Material elevation 8
+        return 'filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.16)) drop-shadow(0 6px 12px rgba(0, 0, 0, 0.12)) drop-shadow(0 2px 16px rgba(0, 0, 0, 0.08));';
       default:
         return '';
     }
   };
 
   // Generate glow CSS
-  const getGlowCSS = () => {
+  const getGlowFilters = () => {
     if (!glow) return '';
     const firstColor = colors[0] || '#ff6b6b';
-    return `text-shadow: 0 0 10px ${firstColor}40, 0 0 20px ${firstColor}30, 0 0 30px ${firstColor}20;`;
+    return `drop-shadow(0 0 10px ${firstColor}40) drop-shadow(0 0 20px ${firstColor}30) drop-shadow(0 0 30px ${firstColor}20)`;
+  };
+
+  // Combine shadow and glow filters
+  const getCombinedFilterCSS = () => {
+    const shadowFilters = shadow !== 'none' ? getShadowCSS().replace('filter: ', '').replace(';', '') : '';
+    const glowFilters = getGlowFilters();
+    
+    const allFilters = [shadowFilters, glowFilters].filter(Boolean).join(' ');
+    
+    return allFilters ? `filter: ${allFilters};` : '';
   };
   
   // Generate responsive font size CSS
@@ -97,7 +110,7 @@ export const GradientText: React.FC<GradientTextProps> = ({
       -webkit-text-fill-color: transparent;
       background-clip: text;
       color: transparent;
-      ${glow ? getGlowCSS() : getShadowCSS()}
+      ${getCombinedFilterCSS()}
       ${animate ? `
         background-size: 200% 200%;
         animation: gradientShift-${uniqueId} ${animationDuration} ease infinite;
