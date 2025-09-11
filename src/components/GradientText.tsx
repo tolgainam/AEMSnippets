@@ -51,11 +51,11 @@ export const GradientText: React.FC<GradientTextProps> = ({
     .filter(([breakpoint]) => ['390px (XS)', '1536px (XL)'].includes(breakpoint))
     .map(([breakpoint, size]) => {
       if (breakpoint === '390px (XS)') return '';
-      if (breakpoint === '1536px (XL)') return `
-        @media (min-width: 1536px) {
+      if (breakpoint === '1536px (XL)') {
+        return `@media (min-width: 1536px) {
           .${cssClass} { font-size: ${size}; }
-        }
-      `;
+        }`;
+      }
       return '';
     }).join('') : '';
 
