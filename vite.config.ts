@@ -14,5 +14,10 @@ export default defineConfig({
         'gradientTypography/embed': resolve(__dirname, 'gradientTypography/embed.html')
       }
     }
+  },
+  // Handle client-side routing for production
+  preview: {
+    port: 4173,
+    strictPort: true,
   }
 })
