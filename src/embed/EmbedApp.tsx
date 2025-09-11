@@ -6,8 +6,7 @@ interface EmbedConfig {
   text: string;
   colors: string[];
   direction: string;
-  fontSize: string;
-  fontSizeToken?: string;
+  fontSizeToken: string;
   fontFamily: string;
   animate: boolean;
   animationDuration: string;
@@ -19,7 +18,7 @@ const EmbedApp: React.FC = () => {
     text: 'Gradient Text',
     colors: ['#ff6b6b', '#4ecdc4', '#45b7d1'],
     direction: 'to right',
-    fontSize: '2rem',
+    fontSizeToken: 'h1',
     fontFamily: '',
     animate: false,
     animationDuration: '3s',
@@ -49,12 +48,8 @@ const EmbedApp: React.FC = () => {
       newConfig.direction = decodeURIComponent(urlParams.get('direction') || '');
     }
     
-    if (urlParams.has('fontSize')) {
-      newConfig.fontSize = urlParams.get('fontSize') || '';
-    }
-    
     if (urlParams.has('fontSizeToken')) {
-      newConfig.fontSizeToken = urlParams.get('fontSizeToken') || undefined;
+      newConfig.fontSizeToken = urlParams.get('fontSizeToken') || 'h1';
     }
     
     if (urlParams.has('brand')) {
@@ -89,7 +84,6 @@ const EmbedApp: React.FC = () => {
       <GradientText
         colors={config.colors}
         direction={config.direction}
-        fontSize={config.fontSize}
         fontSizeToken={config.fontSizeToken}
         fontFamily={config.fontFamily}
         animate={config.animate}

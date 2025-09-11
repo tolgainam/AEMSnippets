@@ -6,8 +6,7 @@ interface ConfigState {
   text: string;
   colors: string[];
   direction: string;
-  fontSize: string;
-  fontSizeToken?: string;
+  fontSizeToken: string;
   fontFamily: string;
   animate: boolean;
   animationDuration: string;
@@ -19,7 +18,6 @@ const DemoApp: React.FC = () => {
     text: 'Beautiful Gradient Text',
     colors: [Brand.iqos.primary.main, Brand.iqos.tints.dark85, Brand.iqos.primary.dark],
     direction: 'to right',
-    fontSize: '40px',
     fontSizeToken: 'poster',
     fontFamily: '',
     animate: false,
@@ -40,13 +38,6 @@ const DemoApp: React.FC = () => {
     };
   };
 
-  const getBreakpointFontSize = (fontSizeKey: string, breakpoint: string = '390px (XS)') => {
-    const fontSizeData = typographyTokens.size[fontSizeKey as keyof typeof typographyTokens.size];
-    if (typeof fontSizeData === 'object' && fontSizeData[breakpoint as keyof typeof fontSizeData]) {
-      return fontSizeData[breakpoint as keyof typeof fontSizeData];
-    }
-    return '16px';
-  };
 
   const getResponsiveFontSizes = (fontSizeKey: string) => {
     const fontSizeData = typographyTokens.size[fontSizeKey as keyof typeof typographyTokens.size];
@@ -63,8 +54,7 @@ const DemoApp: React.FC = () => {
       text: config.text,
       colors: JSON.stringify(config.colors),
       direction: config.direction,
-      fontSize: config.fontSize,
-      ...(config.fontSizeToken && { fontSizeToken: config.fontSizeToken }),
+      fontSizeToken: config.fontSizeToken,
       fontFamily: config.fontFamily,
       animate: config.animate.toString(),
       animationDuration: config.animationDuration,
@@ -141,7 +131,6 @@ const DemoApp: React.FC = () => {
         <GradientText
           colors={config.colors}
           direction={config.direction}
-          fontSize={config.fontSize}
           fontSizeToken={config.fontSizeToken}
           fontFamily={config.fontFamily}
           animate={config.animate}
@@ -279,22 +268,15 @@ const DemoApp: React.FC = () => {
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', marginBottom: '5px' }}>Font Size (Responsive):</label>
             <select
-              value={config.fontSizeToken || 'custom'}
+              value={config.fontSizeToken}
               onChange={(e) => {
-                if (e.target.value === 'custom') {
-                  setConfig(prev => ({ ...prev, fontSizeToken: undefined }));
-                } else {
-                  const mobileSize = getBreakpointFontSize(e.target.value, '390px (XS)');
-                  setConfig(prev => ({ 
-                    ...prev, 
-                    fontSize: mobileSize,
-                    fontSizeToken: e.target.value 
-                  }));
-                }
+                setConfig(prev => ({ 
+                  ...prev, 
+                  fontSizeToken: e.target.value 
+                }));
               }}
               style={{ width: '100%', padding: '8px' }}
             >
-              <option value="custom">Custom</option>
               {Object.keys(typographyTokens.size).map((key) => {
                 const { mobile, desktop } = getResponsiveFontSizes(key);
                 return (
@@ -304,15 +286,6 @@ const DemoApp: React.FC = () => {
                 );
               })}
             </select>
-            {!config.fontSizeToken && (
-              <input
-                type="text"
-                value={config.fontSize}
-                onChange={(e) => setConfig(prev => ({ ...prev, fontSize: e.target.value }))}
-                placeholder="e.g., 2rem, 24px"
-                style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-              />
-            )}
           </div>
 
 
@@ -355,7 +328,7 @@ import { GradientText } from 'gradient-typography';
 <GradientText
   colors={${JSON.stringify(config.colors)}}
   direction="${config.direction}"
-  fontSize="${config.fontSize}"
+  fontSizeToken="${config.fontSizeToken}"
   brand="${config.brand}"
   animate={${config.animate}}
   animationDuration="${config.animationDuration}"

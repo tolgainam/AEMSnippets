@@ -5,8 +5,7 @@ export interface GradientTextProps {
   children: React.ReactNode;
   colors?: string[];
   direction?: string;
-  fontSize?: string;
-  fontSizeToken?: string;
+  fontSizeToken: string;
   fontFamily?: string;
   animate?: boolean;
   animationDuration?: string;
@@ -19,7 +18,6 @@ export const GradientText: React.FC<GradientTextProps> = ({
   children,
   colors = ['#ff6b6b', '#4ecdc4', '#45b7d1'],
   direction = 'to right',
-  fontSize = '2rem',
   fontSizeToken,
   fontFamily = 'inherit',
   animate = false,
@@ -33,23 +31,13 @@ export const GradientText: React.FC<GradientTextProps> = ({
   const effectiveFontFamily = fontFamily === 'inherit' || !fontFamily ? brandTokens.typography.fontFamily.heading : fontFamily;
   const fontWeight = brandTokens.typography.fontWeight.bold;
   
-  // Handle responsive font sizes
-  const getResponsiveFontSize = () => {
-    if (fontSizeToken && typographyTokens.size[fontSizeToken as keyof typeof typographyTokens.size]) {
-      const fontSizeData = typographyTokens.size[fontSizeToken as keyof typeof typographyTokens.size];
-      if (typeof fontSizeData === 'object') {
-        return fontSizeData;
-      }
-    }
-    return null;
-  };
-  
-  const responsiveFontSizes = getResponsiveFontSize();
+  // Get responsive font sizes from token
+  const responsiveFontSizes = typographyTokens.size[fontSizeToken as keyof typeof typographyTokens.size];
   const gradientColors = colors.join(', ');
   const uniqueId = Math.random().toString(36).substr(2, 9);
   
   const baseStyles: React.CSSProperties = {
-    fontSize: responsiveFontSizes ? responsiveFontSizes['390px (XS)'] || fontSize : fontSize,
+    fontSize: responsiveFontSizes['390px (XS)'] || '16px',
     fontWeight,
     fontFamily: effectiveFontFamily,
     display: 'inline-block',
