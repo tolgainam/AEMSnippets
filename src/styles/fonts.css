@@ -1,7 +1,7 @@
 /* IQOS Fonts */
 @font-face {
   font-family: 'IQOSW10-Regular';
-  src: url('/fonts/IQOSW10-Regular.woff') format('woff');
+  src: url('/AEMSnippets/fonts/IQOSW10-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -9,7 +9,7 @@
 
 @font-face {
   font-family: 'IQOSW10-Bold';
-  src: url('/fonts/IQOSW10-Bold.woff2') format('woff2');
+  src: url('/AEMSnippets/fonts/IQOSW10-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -18,7 +18,7 @@
 /* ZYN Fonts */
 @font-face {
   font-family: 'ZYNSans_W_Rg';
-  src: url('/fonts/ZYNSans_W_Rg.woff') format('woff');
+  src: url('/AEMSnippets/fonts/ZYNSans_W_Rg.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -26,7 +26,7 @@
 
 @font-face {
   font-family: 'ZYNSans_W_XBd';
-  src: url('/fonts/ZYNSans_W_XBd.woff') format('woff');
+  src: url('/AEMSnippets/fonts/ZYNSans_W_XBd.woff') format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
