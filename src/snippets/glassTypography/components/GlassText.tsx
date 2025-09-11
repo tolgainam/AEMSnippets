@@ -15,6 +15,7 @@ export interface GlassTextProps {
   rounded?: 'default' | 'pill' | 'square' | 'rounded';
   animate?: boolean;
   animationDuration?: string;
+  glassMode?: 'text' | 'background';
 }
 
 export const GlassText: React.FC<GlassTextProps> = ({
@@ -30,6 +31,7 @@ export const GlassText: React.FC<GlassTextProps> = ({
   rounded = 'default',
   animate = false,
   animationDuration = '3s',
+  glassMode = 'background',
 }) => {
   // Suppress unused variable warning - rounded is part of the interface for future use
   void rounded;
@@ -78,6 +80,79 @@ export const GlassText: React.FC<GlassTextProps> = ({
       50% { transform: translateY(-10px) scale(1.02); }
     }
   ` : '';
+
+  // Generate glass background effect CSS for div containers
+  const getGlassBackgroundCSS = () => {
+    switch (variant) {
+      case 'glass-light':
+        return `
+          background: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 12px;
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+          padding: 16px 24px;
+        `;
+      case 'glass-dark':
+        return `
+          background: rgba(0, 0, 0, 0.2);
+          backdrop-filter: blur(15px);
+          -webkit-backdrop-filter: blur(15px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          padding: 16px 24px;
+        `;
+      case 'glass-heavy':
+        return `
+          background: rgba(255, 255, 255, 0.25);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.4);
+          border-radius: 16px;
+          box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+          padding: 20px 28px;
+        `;
+      case 'glass-subtle':
+        return `
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+          padding: 12px 20px;
+        `;
+      case 'liquidGlass':
+        return `
+          background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.2) 0%, 
+            rgba(255, 255, 255, 0.1) 25%,
+            rgba(255, 255, 255, 0.15) 50%,
+            rgba(255, 255, 255, 0.1) 75%,
+            rgba(255, 255, 255, 0.2) 100%
+          );
+          background-size: 200% 200%;
+          backdrop-filter: blur(15px);
+          -webkit-backdrop-filter: blur(15px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 16px;
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          padding: 16px 24px;
+        `;
+      default: // 'glass'
+        return `
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 12px;
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          padding: 16px 24px;
+        `;
+    }
+  };
 
   // Generate glass text effect CSS based on variant
   const getGlassTextCSS = () => {
@@ -182,7 +257,21 @@ export const GlassText: React.FC<GlassTextProps> = ({
     }
   };
 
-  const glassCSS = `
+  const glassCSS = glassMode === 'background' ? `
+    .glass-container-${uniqueId} {
+      ${getGlassBackgroundCSS()}
+      ${animate ? 'transition: all 0.3s ease;' : ''}
+    }
+    
+    .glass-text-${uniqueId} {
+      font-size: ${responsiveFontSizes['390px (XS)'] || '16px'};
+      color: ${themeTokens.content.primary};
+      margin: 0;
+    }
+    
+    ${responsiveFontCSS}
+    ${animationCSS}
+  ` : `
     .glass-text-${uniqueId} {
       font-size: ${responsiveFontSizes['390px (XS)'] || '16px'};
       ${getGlassTextCSS()}
@@ -211,7 +300,7 @@ export const GlassText: React.FC<GlassTextProps> = ({
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
       }
-      .glass-text-${uniqueId} {
+      .${glassMode === 'background' ? `glass-container-${uniqueId}` : `glass-text-${uniqueId}`} {
         animation: liquidShift-${uniqueId} ${animationDuration} ease-in-out infinite;
       }
     `;
@@ -220,9 +309,17 @@ export const GlassText: React.FC<GlassTextProps> = ({
       <>
         <style dangerouslySetInnerHTML={{ __html: glassCSS + liquidAnimationCSS }} />
         <div style={containerStyles}>
-          <span className={`glass-text-${uniqueId} ${className}`.trim()} style={baseStyles}>
-            {children}
-          </span>
+          {glassMode === 'background' ? (
+            <div className={`glass-container-${uniqueId} ${className}`.trim()}>
+              <span className={`glass-text-${uniqueId}`} style={baseStyles}>
+                {children}
+              </span>
+            </div>
+          ) : (
+            <span className={`glass-text-${uniqueId} ${className}`.trim()} style={baseStyles}>
+              {children}
+            </span>
+          )}
         </div>
       </>
     );
@@ -232,9 +329,17 @@ export const GlassText: React.FC<GlassTextProps> = ({
     <>
       <style dangerouslySetInnerHTML={{ __html: glassCSS }} />
       <div style={containerStyles}>
-        <span className={`glass-text-${uniqueId} ${className}`.trim()} style={baseStyles}>
-          {children}
-        </span>
+        {glassMode === 'background' ? (
+          <div className={`glass-container-${uniqueId} ${className}`.trim()}>
+            <span className={`glass-text-${uniqueId}`} style={baseStyles}>
+              {children}
+            </span>
+          </div>
+        ) : (
+          <span className={`glass-text-${uniqueId} ${className}`.trim()} style={baseStyles}>
+            {children}
+          </span>
+        )}
       </div>
     </>
   );

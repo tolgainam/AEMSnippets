@@ -13,6 +13,7 @@ interface ConfigState {
   rounded: 'default' | 'pill' | 'square' | 'rounded';
   animate: boolean;
   animationDuration: string;
+  glassMode: 'text' | 'background';
 }
 
 const DemoApp: React.FC = () => {
@@ -27,6 +28,7 @@ const DemoApp: React.FC = () => {
     rounded: 'default',
     animate: false,
     animationDuration: '3s',
+    glassMode: 'background',
   });
 
   const getResponsiveFontSizes = (fontSizeKey: string) => {
@@ -96,6 +98,7 @@ const DemoApp: React.FC = () => {
             rounded={config.rounded}
             animate={config.animate}
             animationDuration={config.animationDuration}
+            glassMode={config.glassMode}
           >
             {config.text}
           </GlassText>
