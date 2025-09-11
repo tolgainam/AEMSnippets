@@ -7,6 +7,9 @@ A collection of reusable AEM snippets and components that can be imported as npm
 ### Gradient Typography
 Beautiful gradient text effects with animation support, brand tokens, and responsive design.
 
+### Glass Typography
+Stunning glassmorphism text effects with theme support, brand tokens, and multiple glass variants.
+
 ## Features
 
 - 🎨 Customizable gradient colors
