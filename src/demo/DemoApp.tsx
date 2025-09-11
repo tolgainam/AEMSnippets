@@ -58,7 +58,7 @@ const DemoApp: React.FC = () => {
       brand: config.brand,
     });
 
-    const embedUrl = `${window.location.origin}/embed.html?${params.toString()}`;
+    const embedUrl = `${window.location.origin}/colorTypography/embed.html?${params.toString()}`;
     
     return `<iframe src="${embedUrl}" width="600" height="200" frameborder="0" style="border: none;"></iframe>`;
   };
