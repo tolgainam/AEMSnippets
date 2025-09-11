@@ -2,23 +2,16 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
-// https://vitejs.dev/config/
+// Demo app build configuration for GitHub Pages
 export default defineConfig({
   plugins: [react()],
+  base: '/colorTypography/',
   build: {
-    lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'GradientTypography',
-      formats: ['es', 'umd'],
-      fileName: (format) => `gradient-typography.${format}.js`
-    },
+    outDir: 'dist',
     rollupOptions: {
-      external: ['react', 'react-dom'],
-      output: {
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM'
-        }
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        embed: resolve(__dirname, 'embed.html')
       }
     }
   }

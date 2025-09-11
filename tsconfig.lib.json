@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "outDir": "lib",
+    "emitDeclarationOnly": true
+  },
+  "include": ["src/index.ts", "src/components/**/*", "src/tokens/**/*"],
+  "exclude": ["src/demo/**/*", "src/embed/**/*", "src/main.tsx"]
+}

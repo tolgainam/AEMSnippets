@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GradientText } from '../components/GradientText';
-import { Brand, brandTokens, typographyTokens, BrandName } from '../tokens/designTokens';
+import { Brand, typographyTokens, BrandName } from '../tokens/designTokens';
 
 interface ConfigState {
   text: string;
@@ -38,14 +38,10 @@ const DemoApp: React.FC = () => {
     };
   };
 
-  const getFontSizes = () => {
-    return typographyTokens.size;
-  };
-
   const getBreakpointFontSize = (fontSizeKey: string, breakpoint: string = '390px (XS)') => {
     const fontSizeData = typographyTokens.size[fontSizeKey as keyof typeof typographyTokens.size];
-    if (typeof fontSizeData === 'object' && fontSizeData[breakpoint]) {
-      return fontSizeData[breakpoint];
+    if (typeof fontSizeData === 'object' && fontSizeData[breakpoint as keyof typeof fontSizeData]) {
+      return fontSizeData[breakpoint as keyof typeof fontSizeData];
     }
     return '16px';
   };

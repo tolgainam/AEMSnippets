@@ -2,16 +2,17 @@
   "name": "gradient-typography",
   "version": "1.0.0",
   "description": "A React component library for creating beautiful gradient typography that can be imported or embedded",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/gradient-typography.umd.js",
+  "module": "lib/gradient-typography.es.js",
+  "types": "lib/index.d.ts",
   "files": [
-    "dist"
+    "lib"
   ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:lib": "rollup -c",
+    "build:lib": "vite build --config vite.config.lib.ts",
+    "build:demo": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit"
@@ -28,10 +29,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
@@ -41,10 +43,10 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "rollup": "^4.18.0",
-    "@rollup/plugin-typescript": "^11.1.6",
     "rollup-plugin-dts": "^6.1.1",
     "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "vite": "^5.2.0",
+    "vite-plugin-dts": "^4.5.4"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
