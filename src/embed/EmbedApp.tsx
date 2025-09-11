@@ -7,6 +7,7 @@ interface EmbedConfig {
   colors: string[];
   direction: string;
   fontSize: string;
+  fontSizeToken?: string;
   fontFamily: string;
   animate: boolean;
   animationDuration: string;
@@ -52,6 +53,10 @@ const EmbedApp: React.FC = () => {
       newConfig.fontSize = urlParams.get('fontSize') || '';
     }
     
+    if (urlParams.has('fontSizeToken')) {
+      newConfig.fontSizeToken = urlParams.get('fontSizeToken') || undefined;
+    }
+    
     if (urlParams.has('brand')) {
       newConfig.brand = urlParams.get('brand') as BrandName || 'iqos';
     }
@@ -85,6 +90,7 @@ const EmbedApp: React.FC = () => {
         colors={config.colors}
         direction={config.direction}
         fontSize={config.fontSize}
+        fontSizeToken={config.fontSizeToken}
         fontFamily={config.fontFamily}
         animate={config.animate}
         animationDuration={config.animationDuration}

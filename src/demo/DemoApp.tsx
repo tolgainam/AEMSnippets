@@ -7,6 +7,7 @@ interface ConfigState {
   colors: string[];
   direction: string;
   fontSize: string;
+  fontSizeToken?: string;
   fontFamily: string;
   animate: boolean;
   animationDuration: string;
@@ -19,6 +20,7 @@ const DemoApp: React.FC = () => {
     colors: [Brand.iqos.primary.main, Brand.iqos.tints.dark85, Brand.iqos.primary.dark],
     direction: 'to right',
     fontSize: '40px',
+    fontSizeToken: 'poster',
     fontFamily: '',
     animate: false,
     animationDuration: '3s',
@@ -46,12 +48,23 @@ const DemoApp: React.FC = () => {
     return '16px';
   };
 
+  const getResponsiveFontSizes = (fontSizeKey: string) => {
+    const fontSizeData = typographyTokens.size[fontSizeKey as keyof typeof typographyTokens.size];
+    if (typeof fontSizeData === 'object') {
+      const mobile = fontSizeData['390px (XS)'] || '16px';
+      const desktop = fontSizeData['1536px (XL)'] || mobile;
+      return { mobile, desktop };
+    }
+    return { mobile: '16px', desktop: '16px' };
+  };
+
   const generateEmbedCode = () => {
     const params = new URLSearchParams({
       text: config.text,
       colors: JSON.stringify(config.colors),
       direction: config.direction,
       fontSize: config.fontSize,
+      ...(config.fontSizeToken && { fontSizeToken: config.fontSizeToken }),
       fontFamily: config.fontFamily,
       animate: config.animate.toString(),
       animationDuration: config.animationDuration,
@@ -129,6 +142,7 @@ const DemoApp: React.FC = () => {
           colors={config.colors}
           direction={config.direction}
           fontSize={config.fontSize}
+          fontSizeToken={config.fontSizeToken}
           fontFamily={config.fontFamily}
           animate={config.animate}
           animationDuration={config.animationDuration}
@@ -263,31 +277,34 @@ const DemoApp: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '5px' }}>Font Size:</label>
+            <label style={{ display: 'block', marginBottom: '5px' }}>Font Size (Responsive):</label>
             <select
-              value={Object.keys(typographyTokens.size).find(key => 
-                getBreakpointFontSize(key, '390px (XS)') === config.fontSize
-              ) || 'custom'}
+              value={config.fontSizeToken || 'custom'}
               onChange={(e) => {
                 if (e.target.value === 'custom') {
-                  // Keep current value for custom input
+                  setConfig(prev => ({ ...prev, fontSizeToken: undefined }));
                 } else {
-                  const fontSize = getBreakpointFontSize(e.target.value, '390px (XS)');
-                  setConfig(prev => ({ ...prev, fontSize }));
+                  const mobileSize = getBreakpointFontSize(e.target.value, '390px (XS)');
+                  setConfig(prev => ({ 
+                    ...prev, 
+                    fontSize: mobileSize,
+                    fontSizeToken: e.target.value 
+                  }));
                 }
               }}
               style={{ width: '100%', padding: '8px' }}
             >
               <option value="custom">Custom</option>
-              {Object.keys(typographyTokens.size).map((key) => (
-                <option key={key} value={key}>
-                  {key.toUpperCase()} ({getBreakpointFontSize(key, '390px (XS)')})
-                </option>
-              ))}
+              {Object.keys(typographyTokens.size).map((key) => {
+                const { mobile, desktop } = getResponsiveFontSizes(key);
+                return (
+                  <option key={key} value={key}>
+                    {key.toUpperCase()} (📱{mobile} 💻{desktop})
+                  </option>
+                );
+              })}
             </select>
-            {(Object.keys(typographyTokens.size).find(key => 
-              getBreakpointFontSize(key, '390px (XS)') === config.fontSize
-            ) === undefined) && (
+            {!config.fontSizeToken && (
               <input
                 type="text"
                 value={config.fontSize}
