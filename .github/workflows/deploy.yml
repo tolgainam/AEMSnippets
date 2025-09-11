@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Build demo app
-        run: npm run build:demo
+        run: npm run build
 
       - name: List dist contents
         run: ls -la dist/
