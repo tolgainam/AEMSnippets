@@ -43,7 +43,7 @@ export const getGlassClasses = ({
   noHover = false,
   rounded = 'default'
 }: GlassProps = {}): string => {
-  const classes = [variant];
+  const classes: string[] = [variant];
   
   // Add rounded modifier
   if (rounded === 'pill') {

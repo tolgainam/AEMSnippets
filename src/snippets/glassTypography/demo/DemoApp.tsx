@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GlassText } from '../components/GlassText';
-import { Brand, typographyTokens, BrandName } from '../tokens/designTokens';
+import { typographyTokens, BrandName } from '../tokens/designTokens';
 
 interface ConfigState {
   text: string;

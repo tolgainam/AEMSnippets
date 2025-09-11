@@ -31,6 +31,8 @@ export const GlassText: React.FC<GlassTextProps> = ({
   animate = false,
   animationDuration = '3s',
 }) => {
+  // Suppress unused variable warning - rounded is part of the interface for future use
+  void rounded;
   const brandTokens = Brand[brand];
   const themeTokens = createThemeTokens(brand)[theme];
   const effectiveFontFamily = fontFamily === 'inherit' || !fontFamily ? brandTokens.typography.fontFamily.heading : fontFamily;
@@ -40,14 +42,6 @@ export const GlassText: React.FC<GlassTextProps> = ({
   const responsiveFontSizes = typographyTokens.size[fontSizeToken as keyof typeof typographyTokens.size];
   const uniqueId = Math.random().toString(36).substr(2, 9);
   
-  const getRoundedClass = () => {
-    switch (rounded) {
-      case 'pill': return 'glass-pill';
-      case 'square': return 'glass-square';
-      case 'rounded': return 'glass-rounded';
-      default: return '';
-    }
-  };
 
   const containerStyles: React.CSSProperties = {
     textAlign,
