@@ -49,7 +49,7 @@ const DemoApp: React.FC = () => {
     return { mobile: '16px', desktop: '16px' };
   };
 
-  const generateEmbedCode = () => {
+  const generateEmbedUrl = () => {
     const params = new URLSearchParams({
       text: config.text,
       colors: JSON.stringify(config.colors),
@@ -61,8 +61,11 @@ const DemoApp: React.FC = () => {
       brand: config.brand,
     });
 
-    const embedUrl = `${window.location.origin}/colorTypography/embed.html?${params.toString()}`;
-    
+    return `${window.location.origin}/colorTypography/embed.html?${params.toString()}`;
+  };
+
+  const generateEmbedCode = () => {
+    const embedUrl = generateEmbedUrl();
     return `<iframe src="${embedUrl}" width="600" height="200" frameborder="0" style="border: none;"></iframe>`;
   };
 
@@ -350,6 +353,21 @@ import { GradientText } from 'gradient-typography';
               style={{ marginTop: '10px', padding: '8px 16px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
             >
               Copy Embed Code
+            </button>
+          </div>
+
+          <div style={{ marginTop: '20px' }}>
+            <h4>AEM Embed:</h4>
+            <textarea
+              value={generateEmbedUrl()}
+              readOnly
+              style={{ width: '100%', height: '60px', padding: '10px', fontFamily: 'monospace', fontSize: '12px' }}
+            />
+            <button
+              onClick={() => copyToClipboard(generateEmbedUrl())}
+              style={{ marginTop: '10px', padding: '8px 16px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+            >
+              Copy AEM Embed URL
             </button>
           </div>
 
