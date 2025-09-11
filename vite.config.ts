@@ -11,7 +11,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        'gradientTypography/embed': resolve(__dirname, 'gradientTypography/embed.html')
+        'gradientTypography/embed': resolve(__dirname, 'gradientTypography/embed.html'),
+        'glassTypography/embed': resolve(__dirname, 'glassTypography/embed.html')
       }
     }
   },
