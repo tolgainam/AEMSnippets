@@ -10,6 +10,8 @@ interface EmbedConfig {
   fontFamily: string;
   animate: boolean;
   animationDuration: string;
+  shadow: 'none' | 'subtle' | 'medium' | 'hard';
+  glow: boolean;
   brand: BrandName;
 }
 
@@ -22,6 +24,8 @@ const EmbedApp: React.FC = () => {
     fontFamily: '',
     animate: false,
     animationDuration: '3s',
+    shadow: 'none',
+    glow: false,
     brand: 'iqos',
   });
 
@@ -68,6 +72,14 @@ const EmbedApp: React.FC = () => {
       newConfig.animationDuration = urlParams.get('animationDuration') || '';
     }
     
+    if (urlParams.has('shadow')) {
+      newConfig.shadow = urlParams.get('shadow') as 'none' | 'subtle' | 'medium' | 'hard' || 'none';
+    }
+    
+    if (urlParams.has('glow')) {
+      newConfig.glow = urlParams.get('glow') === 'true';
+    }
+    
     setConfig(prevConfig => ({ ...prevConfig, ...newConfig }));
   }, []);
 
@@ -88,6 +100,8 @@ const EmbedApp: React.FC = () => {
         fontFamily={config.fontFamily}
         animate={config.animate}
         animationDuration={config.animationDuration}
+        shadow={config.shadow}
+        glow={config.glow}
         brand={config.brand}
       >
         {config.text}

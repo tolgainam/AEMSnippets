@@ -9,6 +9,8 @@ export interface GradientTextProps {
   fontFamily?: string;
   animate?: boolean;
   animationDuration?: string;
+  shadow?: 'none' | 'subtle' | 'medium' | 'hard';
+  glow?: boolean;
   className?: string;
   style?: React.CSSProperties;
   brand?: BrandName;
@@ -22,6 +24,8 @@ export const GradientText: React.FC<GradientTextProps> = ({
   fontFamily = 'inherit',
   animate = false,
   animationDuration = '3s',
+  shadow = 'none',
+  glow = false,
   className = '',
   style = {},
   brand = 'iqos',
@@ -45,6 +49,27 @@ export const GradientText: React.FC<GradientTextProps> = ({
 
   const cssClass = `gradient-text-${uniqueId}`;
   
+  // Generate shadow CSS
+  const getShadowCSS = () => {
+    switch (shadow) {
+      case 'subtle':
+        return 'text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);';
+      case 'medium':
+        return 'text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);';
+      case 'hard':
+        return 'text-shadow: 0 4px 8px rgba(0, 0, 0, 0.25), 0 8px 16px rgba(0, 0, 0, 0.15);';
+      default:
+        return '';
+    }
+  };
+
+  // Generate glow CSS
+  const getGlowCSS = () => {
+    if (!glow) return '';
+    const firstColor = colors[0] || '#ff6b6b';
+    return `text-shadow: 0 0 10px ${firstColor}40, 0 0 20px ${firstColor}30, 0 0 30px ${firstColor}20;`;
+  };
+  
   // Generate responsive font size CSS
   const responsiveFontCSS = responsiveFontSizes ? Object.entries(responsiveFontSizes)
     .filter(([breakpoint]) => ['390px (XS)', '1536px (XL)'].includes(breakpoint))
@@ -65,6 +90,7 @@ export const GradientText: React.FC<GradientTextProps> = ({
       -webkit-text-fill-color: transparent;
       background-clip: text;
       color: transparent;
+      ${glow ? getGlowCSS() : getShadowCSS()}
       ${animate ? `
         background-size: 200% 200%;
         animation: gradientShift-${uniqueId} ${animationDuration} ease infinite;

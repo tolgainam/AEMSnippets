@@ -10,6 +10,8 @@ interface ConfigState {
   fontFamily: string;
   animate: boolean;
   animationDuration: string;
+  shadow: 'none' | 'subtle' | 'medium' | 'hard';
+  glow: boolean;
   brand: BrandName;
 }
 
@@ -22,6 +24,8 @@ const DemoApp: React.FC = () => {
     fontFamily: '',
     animate: false,
     animationDuration: '3s',
+    shadow: 'none',
+    glow: false,
     brand: 'iqos',
   });
 
@@ -58,6 +62,8 @@ const DemoApp: React.FC = () => {
       fontFamily: config.fontFamily,
       animate: config.animate.toString(),
       animationDuration: config.animationDuration,
+      shadow: config.shadow,
+      glow: config.glow.toString(),
       brand: config.brand,
     });
 
@@ -138,6 +144,8 @@ const DemoApp: React.FC = () => {
           fontFamily={config.fontFamily}
           animate={config.animate}
           animationDuration={config.animationDuration}
+          shadow={config.shadow}
+          glow={config.glow}
           brand={config.brand}
         >
           {config.text}
@@ -316,6 +324,32 @@ const DemoApp: React.FC = () => {
               />
             </div>
           )}
+
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '5px' }}>Shadow:</label>
+            <select
+              value={config.shadow}
+              onChange={(e) => setConfig(prev => ({ ...prev, shadow: e.target.value as 'none' | 'subtle' | 'medium' | 'hard' }))}
+              style={{ width: '100%', padding: '8px' }}
+            >
+              <option value="none">None</option>
+              <option value="subtle">Subtle</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'flex', alignItems: 'center' }}>
+              <input
+                type="checkbox"
+                checked={config.glow}
+                onChange={(e) => setConfig(prev => ({ ...prev, glow: e.target.checked }))}
+                style={{ marginRight: '8px' }}
+              />
+              Glow Effect
+            </label>
+          </div>
         </div>
 
         <div>
@@ -335,6 +369,8 @@ import { GradientText } from 'gradient-typography';
   brand="${config.brand}"
   animate={${config.animate}}
   animationDuration="${config.animationDuration}"
+  shadow="${config.shadow}"
+  glow={${config.glow}}
 >
   ${config.text}
 </GradientText>`}
