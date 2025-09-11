@@ -37,7 +37,6 @@ export const GradientText: React.FC<GradientTextProps> = ({
   const uniqueId = Math.random().toString(36).substr(2, 9);
   
   const baseStyles: React.CSSProperties = {
-    fontSize: responsiveFontSizes['390px (XS)'] || '16px',
     fontWeight,
     fontFamily: effectiveFontFamily,
     display: 'inline-block',
@@ -50,7 +49,6 @@ export const GradientText: React.FC<GradientTextProps> = ({
   const responsiveFontCSS = responsiveFontSizes ? Object.entries(responsiveFontSizes)
     .filter(([breakpoint]) => ['390px (XS)', '1536px (XL)'].includes(breakpoint))
     .map(([breakpoint, size]) => {
-      if (breakpoint === '390px (XS)') return '';
       if (breakpoint === '1536px (XL)') {
         return `@media (min-width: 1536px) {
           .${cssClass} { font-size: ${size}; }
@@ -61,6 +59,7 @@ export const GradientText: React.FC<GradientTextProps> = ({
 
   const gradientCSS = `
     .${cssClass} {
+      font-size: ${responsiveFontSizes['390px (XS)'] || '16px'};
       background: linear-gradient(${direction}, ${gradientColors});
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
