@@ -28,7 +28,7 @@ const DemoApp: React.FC = () => {
     rounded: 'default',
     animate: false,
     animationDuration: '3s',
-    glassMode: 'background',
+    glassMode: 'text',
   });
 
   const getResponsiveFontSizes = (fontSizeKey: string) => {
@@ -87,7 +87,30 @@ const DemoApp: React.FC = () => {
           AEM Snippets - Glass Typography
         </h1>
         
-        <div style={{ marginBottom: '40px', textAlign: 'center', minHeight: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ 
+          marginBottom: '40px', 
+          textAlign: 'center', 
+          minHeight: '200px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          background: `
+            linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%), 
+            linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%), 
+            linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.1) 75%), 
+            linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.1) 75%),
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+            linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+          `,
+          backgroundSize: '30px 30px, 30px 30px, 30px 30px, 30px 30px, 200px 200px, 200px 200px, 100% 100%',
+          backgroundPosition: '0 0, 0 15px, 15px -15px, -15px 0px, 0 0, 0 0, 0 0',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: 'inset 0 0 100px rgba(255, 255, 255, 0.1)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
           <GlassText
             variant={config.variant}
             fontSizeToken={config.fontSizeToken}

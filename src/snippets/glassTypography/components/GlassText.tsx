@@ -31,7 +31,7 @@ export const GlassText: React.FC<GlassTextProps> = ({
   rounded = 'default',
   animate = false,
   animationDuration = '3s',
-  glassMode = 'background',
+  glassMode = 'text',
 }) => {
   // Suppress unused variable warning - rounded is part of the interface for future use
   void rounded;
@@ -92,7 +92,6 @@ export const GlassText: React.FC<GlassTextProps> = ({
           border: 1px solid rgba(255, 255, 255, 0.3);
           border-radius: 12px;
           box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-          padding: 16px 24px;
         `;
       case 'glass-dark':
         return `
@@ -102,7 +101,6 @@ export const GlassText: React.FC<GlassTextProps> = ({
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 12px;
           box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-          padding: 16px 24px;
         `;
       case 'glass-heavy':
         return `
@@ -112,7 +110,6 @@ export const GlassText: React.FC<GlassTextProps> = ({
           border: 1px solid rgba(255, 255, 255, 0.4);
           border-radius: 16px;
           box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.5);
-          padding: 20px 28px;
         `;
       case 'glass-subtle':
         return `
@@ -122,7 +119,6 @@ export const GlassText: React.FC<GlassTextProps> = ({
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 8px;
           box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-          padding: 12px 20px;
         `;
       case 'liquidGlass':
         return `
@@ -139,7 +135,6 @@ export const GlassText: React.FC<GlassTextProps> = ({
           border: 1px solid rgba(255, 255, 255, 0.3);
           border-radius: 16px;
           box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-          padding: 16px 24px;
         `;
       default: // 'glass'
         return `
@@ -149,7 +144,6 @@ export const GlassText: React.FC<GlassTextProps> = ({
           border: 1px solid rgba(255, 255, 255, 0.2);
           border-radius: 12px;
           box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-          padding: 16px 24px;
         `;
     }
   };
