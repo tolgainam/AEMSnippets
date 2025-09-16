@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useCallback } from 'react';
+import React, { useLayoutEffect, useRef, useCallback, useEffect, useState } from 'react';
 import { BrandName, createThemeTokens } from '../../../tokens/designTokens';
 import '../styles/contentStack.css';
 
@@ -12,6 +12,8 @@ export interface ContentStackItemProps {
   hasButton?: boolean;
   buttonText?: string;
   buttonUrl?: string;
+  brand?: BrandName;
+  cardTheme?: 'default' | 'dark' | 'accent';
 }
 
 export const ContentStackItem: React.FC<ContentStackItemProps> = ({
@@ -23,8 +25,44 @@ export const ContentStackItem: React.FC<ContentStackItemProps> = ({
   backgroundSize = 'cover',
   hasButton = false,
   buttonText = 'Learn More',
-  buttonUrl = '#'
+  buttonUrl = '#',
+  brand = 'iqos',
+  cardTheme = 'default'
 }) => {
+  // Get theme tokens for this brand (always use light theme)
+  const themeTokens = createThemeTokens(brand);
+  const currentTheme = themeTokens.light;
+
+  // Get card colors based on card theme
+  const getCardColors = () => {
+    switch (cardTheme) {
+      case 'dark':
+        return {
+          cardBackground: currentTheme.background['primary-inverse'], // Dark background
+          textColor: currentTheme.content['primary-inverse'], // Light text
+          buttonBackground: currentTheme.background.primary, // Light button background
+          buttonTextColor: currentTheme.content.primary, // Dark button text
+        };
+      case 'accent':
+        return {
+          cardBackground: currentTheme.background.accent, // Accent color background
+          textColor: currentTheme.content.primary, // Dark text
+          buttonBackground: currentTheme.background.primary, // Light button background
+          buttonTextColor: currentTheme.content.primary, // Dark button text
+        };
+      case 'default':
+      default:
+        return {
+          cardBackground: currentTheme.background.primary, // Light background
+          textColor: currentTheme.content.primary, // Dark text
+          buttonBackground: currentTheme.background['primary-inverse'], // Dark button background
+          buttonTextColor: currentTheme.content['primary-inverse'], // Light button text
+        };
+    }
+  };
+
+  const { cardBackground, textColor, buttonBackground, buttonTextColor } = getCardColors();
+
   // Convert position shorthand to CSS value
   const getBackgroundPosition = (position: string) => {
     switch (position) {
@@ -38,6 +76,7 @@ export const ContentStackItem: React.FC<ContentStackItemProps> = ({
 
   const cardStyle: React.CSSProperties = {
     ...style,
+    backgroundColor: backgroundImage ? 'transparent' : cardBackground,
     ...(backgroundImage && {
       backgroundImage: `url(${backgroundImage})`,
       backgroundSize: backgroundSize,
@@ -53,19 +92,40 @@ export const ContentStackItem: React.FC<ContentStackItemProps> = ({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: currentTheme.background.overlay,
     borderRadius: 'inherit',
     zIndex: 1
   } : {};
 
   const contentStyle: React.CSSProperties = backgroundImage ? {
     position: 'relative',
-    zIndex: 2,
-    color: 'white'
+    zIndex: 2
   } : {};
 
+  // Get CSS class names based on card theme
+  const getCardClasses = () => {
+    let classes = 'content-stack-card';
+
+    // For background images, always use dark theme colors (white text)
+    if (backgroundImage) {
+      classes += ' dark';
+    } else {
+      // Apply theme-based colors
+      if (cardTheme === 'dark') {
+        classes += ' dark';
+      } else if (cardTheme === 'accent') {
+        classes += ' accent';
+      }
+    }
+
+    if (className) {
+      classes += ` ${className}`;
+    }
+    return classes;
+  };
+
   return (
-    <div className={`content-stack-card ${className}`.trim()} style={cardStyle}>
+    <div className={getCardClasses()} style={cardStyle}>
       {backgroundImage && <div style={overlayStyle} />}
       <div style={contentStyle}>
         {children}
@@ -78,10 +138,10 @@ export const ContentStackItem: React.FC<ContentStackItemProps> = ({
               style={{
                 display: 'inline-block',
                 padding: '0.75rem 1.5rem',
-                backgroundColor: backgroundImage ? 'rgba(255, 255, 255, 0.9)' : '#007bff',
-                color: backgroundImage ? '#000' : 'white',
+                backgroundColor: buttonBackground,
+                color: buttonTextColor,
                 textDecoration: 'none',
-                borderRadius: '8px',
+                borderRadius: '100px',
                 fontWeight: 'bold',
                 fontSize: '0.9rem',
                 transition: 'all 0.3s ease',
@@ -90,10 +150,14 @@ export const ContentStackItem: React.FC<ContentStackItemProps> = ({
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                e.currentTarget.style.backgroundColor = currentTheme.background.accent; // Accent on hover
+                e.currentTarget.style.color = currentTheme.content['primary-inverse']; // White text on accent
+                e.currentTarget.style.boxShadow = `0 4px 12px ${currentTheme.background.overlay}`;
               }}
               onMouseOut={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.backgroundColor = buttonBackground;
+                e.currentTarget.style.color = buttonTextColor;
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
@@ -127,12 +191,12 @@ export interface ContentStackProps {
 export const ContentStack: React.FC<ContentStackProps> = ({
   children,
   className = '',
-  itemDistance = 100,
+  itemDistance = 120,
   itemScale = 0.03,
-  itemStackDistance = 30,
-  stackPosition = '20%',
+  itemStackDistance = 24,
+  stackPosition = '15%',
   scaleEndPosition = '10%',
-  baseScale = 0.85,
+  baseScale = 0.95,
   rotationAmount = 0,
   blurAmount = 0,
   onStackComplete,
@@ -146,8 +210,16 @@ export const ContentStack: React.FC<ContentStackProps> = ({
   const cardsRef = useRef<HTMLElement[]>([]);
   const lastTransformsRef = useRef(new Map());
   const isUpdatingRef = useRef(false);
+  const [isInIframe, setIsInIframe] = useState(false);
 
   const themeTokens = createThemeTokens(brand);
+  const currentTheme = themeTokens.light;
+
+  // Detect if running in iframe
+  useEffect(() => {
+    const inIframe = window.self !== window.top;
+    setIsInIframe(inIframe);
+  }, []);
 
   const calculateProgress = useCallback((scrollTop: number, start: number, end: number) => {
     if (scrollTop < start) return 0;
@@ -284,6 +356,7 @@ export const ContentStack: React.FC<ContentStackProps> = ({
     updateCardTransforms();
   }, [updateCardTransforms]);
 
+
   useLayoutEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
@@ -305,6 +378,7 @@ export const ContentStack: React.FC<ContentStackProps> = ({
     });
 
     scroller.addEventListener('scroll', handleScroll, { passive: true });
+
     updateCardTransforms();
 
     return () => {
@@ -325,12 +399,14 @@ export const ContentStack: React.FC<ContentStackProps> = ({
     blurAmount,
     onStackComplete,
     handleScroll,
-    updateCardTransforms
+    updateCardTransforms,
+    isInIframe
   ]);
 
   const containerStyles: React.CSSProperties = {
-    height,
-    backgroundColor: backgroundColor || themeTokens.light.background.primary,
+    height: isInIframe ? 'auto' : height,
+    backgroundColor: backgroundColor || 'transparent',
+    overflow: isInIframe ? 'hidden' : 'auto',
     ...style
   };
 

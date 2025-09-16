@@ -29,12 +29,12 @@ interface EmbedConfig {
 
 const ContentStackEmbedApp: React.FC = () => {
   const [config, setConfig] = useState<EmbedConfig>({
-    itemDistance: 100,
+    itemDistance: 120,
     itemScale: 0.03,
-    itemStackDistance: 30,
-    stackPosition: '20%',
+    itemStackDistance: 24,
+    stackPosition: '15%',
     scaleEndPosition: '10%',
-    baseScale: 0.85,
+    baseScale: 0.95,
     rotationAmount: 0,
     blurAmount: 0,
     brand: 'iqos',
@@ -133,6 +133,7 @@ const ContentStackEmbedApp: React.FC = () => {
     const brand = urlParams.get('brand');
     if (brand) newConfig.brand = brand as BrandName;
 
+
     const cardTheme = urlParams.get('cardTheme');
     if (cardTheme) newConfig.cardTheme = cardTheme;
 
@@ -170,25 +171,22 @@ const ContentStackEmbedApp: React.FC = () => {
         {cards.map((card, index) => (
           <ContentStackItem
             key={index}
-            className={config.cardTheme !== 'default' ? config.cardTheme : undefined}
             backgroundImage={card.hasBackgroundImage ? card.backgroundImage : undefined}
             backgroundPosition={card.backgroundPosition}
             backgroundSize={card.backgroundSize}
             hasButton={card.hasButton}
             buttonText={card.buttonText}
             buttonUrl={card.buttonUrl}
+            brand={config.brand}
+            cardTheme={config.cardTheme}
           >
-            <h2 style={{
-              fontSize: 'clamp(1.25rem, 4vw, 1.75rem)',
+            <h2 className="text-h3" style={{
               fontWeight: 'bold',
-              marginBottom: '1rem',
-              lineHeight: '1.2'
+              marginBottom: '1rem'
             }}>
               {card.title}
             </h2>
-            <p style={{
-              fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
-              lineHeight: '1.6',
+            <p className="text-fs6" style={{
               margin: 0
             }}>
               {card.content}

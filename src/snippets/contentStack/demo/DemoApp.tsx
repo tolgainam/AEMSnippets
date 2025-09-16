@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ContentStack, ContentStackItem } from '../components/ContentStack';
 import { Brand, BrandName } from '../../../tokens/designTokens';
 
@@ -16,14 +16,6 @@ interface CardData {
 
 const ContentStackDemo: React.FC = () => {
   const [config, setConfig] = useState({
-    itemDistance: 100,
-    itemScale: 0.03,
-    itemStackDistance: 30,
-    stackPosition: '20%',
-    scaleEndPosition: '10%',
-    baseScale: 0.85,
-    rotationAmount: 0,
-    blurAmount: 0,
     brand: 'iqos' as BrandName,
     height: '100vh',
     cardTheme: 'default'
@@ -90,6 +82,7 @@ const ContentStackDemo: React.FC = () => {
   const [embedCode, setEmbedCode] = useState('');
   const [showEmbed, setShowEmbed] = useState(false);
   const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
+  const [generatedSeed, setGeneratedSeed] = useState('');
 
   const handleConfigChange = (key: string, value: any) => {
     setConfig(prev => ({ ...prev, [key]: value }));
@@ -101,9 +94,79 @@ const ContentStackDemo: React.FC = () => {
     ));
   };
 
+  // Default card template for new cards
+  const createNewCard = (): CardData => ({
+    title: `New Card ${cards.length + 1}`,
+    content: "Add your content here. Customize this card to tell your story with engaging text that connects with your audience.",
+    backgroundImage: "",
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+    hasBackgroundImage: false,
+    hasButton: false,
+    buttonText: "Learn More",
+    buttonUrl: "#"
+  });
+
+  const addCard = () => {
+    if (cards.length < 6) {
+      setCards(prev => [...prev, createNewCard()]);
+    }
+  };
+
+  const removeCard = () => {
+    if (cards.length > 3) {
+      setCards(prev => prev.slice(0, -1));
+      // Reset active card if it was the last one
+      if (activeCardIndex !== null && activeCardIndex >= cards.length - 1) {
+        setActiveCardIndex(cards.length > 1 ? cards.length - 2 : null);
+      }
+    }
+  };
+
   const handleStackComplete = useCallback(() => {
     console.log('Stack scrolling completed!');
   }, []);
+
+  // Save configuration to URL seed
+  const generateSeed = useCallback(() => {
+    const configData = {
+      config,
+      cards
+    };
+    const seed = btoa(JSON.stringify(configData));
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('seed', seed);
+    return { url: currentUrl.toString(), seed };
+  }, [config, cards]);
+
+  // Load configuration from URL seed
+  const loadFromSeed = useCallback((seed: string) => {
+    try {
+      const configData = JSON.parse(atob(seed));
+      if (configData.config && configData.cards) {
+        setConfig(configData.config);
+        setCards(configData.cards);
+        return true;
+      }
+    } catch (error) {
+      console.error('Failed to load configuration from seed:', error);
+    }
+    return false;
+  }, []);
+
+  // Check for seed in URL on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const seed = urlParams.get('seed');
+    if (seed) {
+      const loaded = loadFromSeed(seed);
+      if (loaded) {
+        console.log('Configuration loaded from URL seed');
+      } else {
+        console.warn('Invalid seed in URL');
+      }
+    }
+  }, [loadFromSeed]);
 
   const generateEmbedCode = useCallback(() => {
     const params = new URLSearchParams();
@@ -119,10 +182,11 @@ const ContentStackDemo: React.FC = () => {
 
     const embedUrl = `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '')}/contentStack/embed.html?${params.toString()}`;
 
-    const code = `<iframe
+    const code = `<!-- Content Stack Embed -->
+<iframe
   src="${embedUrl}"
   width="100%"
-  height="${config.height}"
+  height="600"
   frameBorder="0"
   style="border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);"
   title="Content Stack"
@@ -168,102 +232,6 @@ const ContentStackDemo: React.FC = () => {
           Content Stack
         </h2>
 
-        <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600' }}>Layout</h3>
-
-          <label style={{ display: 'block', marginBottom: '1rem', fontSize: '0.875rem' }}>
-            Item Distance: {config.itemDistance}px
-            <input
-              type="range"
-              min="50"
-              max="200"
-              value={config.itemDistance}
-              onChange={(e) => handleConfigChange('itemDistance', parseInt(e.target.value))}
-              style={{ width: '100%', marginTop: '0.5rem' }}
-            />
-          </label>
-
-          <label style={{ display: 'block', marginBottom: '1rem', fontSize: '0.875rem' }}>
-            Stack Distance: {config.itemStackDistance}px
-            <input
-              type="range"
-              min="10"
-              max="60"
-              value={config.itemStackDistance}
-              onChange={(e) => handleConfigChange('itemStackDistance', parseInt(e.target.value))}
-              style={{ width: '100%', marginTop: '0.5rem' }}
-            />
-          </label>
-
-          <label style={{ display: 'block', marginBottom: '1rem', fontSize: '0.875rem' }}>
-            Stack Position: {config.stackPosition}
-            <select
-              value={config.stackPosition}
-              onChange={(e) => handleConfigChange('stackPosition', e.target.value)}
-              style={{ width: '100%', marginTop: '0.5rem', padding: '0.5rem' }}
-            >
-              <option value="10%">10%</option>
-              <option value="15%">15%</option>
-              <option value="20%">20%</option>
-              <option value="25%">25%</option>
-              <option value="30%">30%</option>
-            </select>
-          </label>
-        </div>
-
-        <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600' }}>Animation</h3>
-
-          <label style={{ display: 'block', marginBottom: '1rem', fontSize: '0.875rem' }}>
-            Scale Factor: {config.itemScale.toFixed(3)}
-            <input
-              type="range"
-              min="0.01"
-              max="0.08"
-              step="0.005"
-              value={config.itemScale}
-              onChange={(e) => handleConfigChange('itemScale', parseFloat(e.target.value))}
-              style={{ width: '100%', marginTop: '0.5rem' }}
-            />
-          </label>
-
-          <label style={{ display: 'block', marginBottom: '1rem', fontSize: '0.875rem' }}>
-            Base Scale: {config.baseScale.toFixed(2)}
-            <input
-              type="range"
-              min="0.7"
-              max="0.95"
-              step="0.05"
-              value={config.baseScale}
-              onChange={(e) => handleConfigChange('baseScale', parseFloat(e.target.value))}
-              style={{ width: '100%', marginTop: '0.5rem' }}
-            />
-          </label>
-
-          <label style={{ display: 'block', marginBottom: '1rem', fontSize: '0.875rem' }}>
-            Rotation: {config.rotationAmount}°
-            <input
-              type="range"
-              min="0"
-              max="5"
-              value={config.rotationAmount}
-              onChange={(e) => handleConfigChange('rotationAmount', parseInt(e.target.value))}
-              style={{ width: '100%', marginTop: '0.5rem' }}
-            />
-          </label>
-
-          <label style={{ display: 'block', marginBottom: '1rem', fontSize: '0.875rem' }}>
-            Blur Amount: {config.blurAmount}px
-            <input
-              type="range"
-              min="0"
-              max="5"
-              value={config.blurAmount}
-              onChange={(e) => handleConfigChange('blurAmount', parseInt(e.target.value))}
-              style={{ width: '100%', marginTop: '0.5rem' }}
-            />
-          </label>
-        </div>
 
         <div style={{ marginBottom: '2rem' }}>
           <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600' }}>Styling</h3>
@@ -290,10 +258,8 @@ const ContentStackDemo: React.FC = () => {
               onChange={(e) => handleConfigChange('cardTheme', e.target.value)}
               style={{ width: '100%', marginTop: '0.5rem', padding: '0.5rem' }}
             >
-              <option value="default">Default</option>
+              <option value="default">Default Light</option>
               <option value="dark">Dark</option>
-              <option value="primary">Primary</option>
-              <option value="secondary">Secondary</option>
               <option value="accent">Accent</option>
             </select>
           </label>
@@ -315,6 +281,51 @@ const ContentStackDemo: React.FC = () => {
 
         <div style={{ marginBottom: '2rem' }}>
           <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600' }}>Card Customization</h3>
+
+          {/* Card Count Controls */}
+          <div style={{
+            marginBottom: '1rem',
+            padding: '1rem',
+            backgroundColor: '#f8f9fa',
+            borderRadius: '6px',
+            border: '1px solid #e1e5e9'
+          }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '600' }}>
+              Number of Cards: {cards.length} (Min: 3, Max: 6)
+            </label>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button
+                onClick={removeCard}
+                disabled={cards.length <= 3}
+                style={{
+                  padding: '0.5rem 1rem',
+                  backgroundColor: cards.length <= 3 ? '#e9ecef' : '#dc3545',
+                  color: cards.length <= 3 ? '#6c757d' : 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontSize: '0.875rem',
+                  cursor: cards.length <= 3 ? 'not-allowed' : 'pointer'
+                }}
+              >
+                ➖ Remove Card
+              </button>
+              <button
+                onClick={addCard}
+                disabled={cards.length >= 6}
+                style={{
+                  padding: '0.5rem 1rem',
+                  backgroundColor: cards.length >= 6 ? '#e9ecef' : '#28a745',
+                  color: cards.length >= 6 ? '#6c757d' : 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontSize: '0.875rem',
+                  cursor: cards.length >= 6 ? 'not-allowed' : 'pointer'
+                }}
+              >
+                ➕ Add Card
+              </button>
+            </div>
+          </div>
 
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '600' }}>
@@ -599,20 +610,144 @@ const ContentStackDemo: React.FC = () => {
               </div>
             </div>
           )}
+
+          {/* Save/Load Configuration */}
+          <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid #e1e5e9' }}>
+            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600' }}>Save & Load Configuration</h3>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <button
+                onClick={() => {
+                  const { url, seed } = generateSeed();
+                  setGeneratedSeed(seed);
+                  copyToClipboard(url);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  backgroundColor: '#17a2b8',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  marginBottom: '0.5rem'
+                }}
+              >
+                🌱 Create Seed
+              </button>
+              <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '0 0 1rem 0', lineHeight: '1.4' }}>
+                Generate and copy a seed URL that contains all your current settings and card configurations.
+              </p>
+
+              {generatedSeed && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '600' }}>
+                    Generated Seed:
+                  </label>
+                  <textarea
+                    value={generatedSeed}
+                    readOnly
+                    style={{
+                      width: '100%',
+                      minHeight: '60px',
+                      padding: '0.5rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '0.75rem',
+                      fontFamily: 'monospace',
+                      backgroundColor: '#f9fafb',
+                      resize: 'vertical'
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '600' }}>
+                Load from URL or Seed:
+              </label>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type="text"
+                  placeholder="Paste configuration URL or seed here..."
+                  style={{
+                    flex: 1,
+                    padding: '0.5rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '4px',
+                    fontSize: '0.875rem'
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const input = e.currentTarget;
+                      const value = input.value.trim();
+                      if (value) {
+                        // Extract seed from URL if it's a full URL
+                        let seed = value;
+                        if (value.includes('seed=')) {
+                          const urlParams = new URLSearchParams(value.split('?')[1] || '');
+                          seed = urlParams.get('seed') || value;
+                        }
+
+                        const loaded = loadFromSeed(seed);
+                        if (loaded) {
+                          input.value = '';
+                          alert('✅ Configuration loaded successfully!');
+                        } else {
+                          alert('❌ Invalid configuration data. Please check your URL or seed.');
+                        }
+                      }
+                    }
+                  }}
+                />
+                <button
+                  onClick={(e) => {
+                    const input = (e.currentTarget.previousElementSibling as HTMLInputElement);
+                    const value = input.value.trim();
+                    if (value) {
+                      // Extract seed from URL if it's a full URL
+                      let seed = value;
+                      if (value.includes('seed=')) {
+                        const urlParams = new URLSearchParams(value.split('?')[1] || '');
+                        seed = urlParams.get('seed') || value;
+                      }
+
+                      const loaded = loadFromSeed(seed);
+                      if (loaded) {
+                        input.value = '';
+                        alert('✅ Configuration loaded successfully!');
+                      } else {
+                        alert('❌ Invalid configuration data. Please check your URL or seed.');
+                      }
+                    }
+                  }}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    fontSize: '0.875rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Load
+                </button>
+              </div>
+              <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '0.5rem 0 0 0', lineHeight: '1.4' }}>
+                Press Enter or click Load to apply the configuration.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Preview */}
       <div style={{ flex: 1, position: 'relative' }}>
         <ContentStack
-          itemDistance={config.itemDistance}
-          itemScale={config.itemScale}
-          itemStackDistance={config.itemStackDistance}
-          stackPosition={config.stackPosition}
-          scaleEndPosition={config.scaleEndPosition}
-          baseScale={config.baseScale}
-          rotationAmount={config.rotationAmount}
-          blurAmount={config.blurAmount}
           brand={config.brand}
           height={config.height}
           onStackComplete={handleStackComplete}
@@ -620,18 +755,24 @@ const ContentStackDemo: React.FC = () => {
           {cards.map((card, index) => (
             <ContentStackItem
               key={index}
-              className={config.cardTheme !== 'default' ? config.cardTheme : undefined}
               backgroundImage={card.hasBackgroundImage ? card.backgroundImage : undefined}
               backgroundPosition={card.backgroundPosition}
               backgroundSize={card.backgroundSize}
               hasButton={card.hasButton}
               buttonText={card.buttonText}
               buttonUrl={card.buttonUrl}
+              brand={config.brand}
+              cardTheme={config.cardTheme}
             >
-              <h2 style={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+              <h2 className="text-h3" style={{
+                fontWeight: 'bold',
+                marginBottom: '1rem'
+              }}>
                 {card.title}
               </h2>
-              <p style={{ fontSize: '1.1rem', lineHeight: '1.6', margin: 0 }}>
+              <p className="text-fs6" style={{
+                margin: 0
+              }}>
                 {card.content}
               </p>
             </ContentStackItem>
