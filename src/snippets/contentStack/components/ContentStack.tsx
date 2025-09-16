@@ -61,7 +61,7 @@ export const ContentStackItem: React.FC<ContentStackItemProps> = ({
     }
   };
 
-  const { cardBackground, textColor, buttonBackground, buttonTextColor } = getCardColors();
+  const { cardBackground, buttonBackground, buttonTextColor } = getCardColors();
 
   // Convert position shorthand to CSS value
   const getBackgroundPosition = (position: string) => {
@@ -200,7 +200,7 @@ export const ContentStack: React.FC<ContentStackProps> = ({
   rotationAmount = 0,
   blurAmount = 0,
   onStackComplete,
-  brand = 'iqos',
+  brand: _brand,
   height = '100vh',
   backgroundColor,
   style = {}
@@ -212,8 +212,7 @@ export const ContentStack: React.FC<ContentStackProps> = ({
   const isUpdatingRef = useRef(false);
   const [isInIframe, setIsInIframe] = useState(false);
 
-  const themeTokens = createThemeTokens(brand);
-  const currentTheme = themeTokens.light;
+  // const themeTokens = createThemeTokens(brand); // Removed - not currently used
 
   // Detect if running in iframe
   useEffect(() => {

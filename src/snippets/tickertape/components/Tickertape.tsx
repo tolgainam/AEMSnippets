@@ -34,7 +34,7 @@ export const Tickertape: React.FC<TickertapeProps> = ({
   height = '60px',
   pauseOnHover = true,
   hasBorder = false,
-  borderColor = '#000000',
+  borderColor: _borderColor,
   textColor
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -53,14 +53,11 @@ export const Tickertape: React.FC<TickertapeProps> = ({
     if (textRef.current && containerRef.current) {
       if (backgroundImage) {
         // For images, use a simpler approach - just repeat multiple times
-        const containerWidth = containerRef.current.clientWidth;
-        const estimatedImageWidth = 100; // Estimate image width
-        const repetitions = Math.max(5, Math.ceil(containerWidth * 3 / estimatedImageWidth));
         setRepeatedText(''); // Not used for images
 
         // Update measurements after image loads
         setTimeout(() => {
-          if (textRef.current) {
+          if (textRef.current && containerRef.current) {
             setTextWidth(textRef.current.scrollWidth);
             setContainerWidth(containerRef.current.clientWidth);
           }
@@ -93,7 +90,7 @@ export const Tickertape: React.FC<TickertapeProps> = ({
 
         // Update measurements
         setTimeout(() => {
-          if (textRef.current) {
+          if (textRef.current && containerRef.current) {
             setTextWidth(textRef.current.scrollWidth);
             setContainerWidth(containerRef.current.clientWidth);
           }

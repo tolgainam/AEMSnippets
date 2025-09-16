@@ -762,7 +762,7 @@ const ContentStackDemo: React.FC = () => {
               buttonText={card.buttonText}
               buttonUrl={card.buttonUrl}
               brand={config.brand}
-              cardTheme={config.cardTheme}
+              cardTheme={config.cardTheme as "dark" | "default" | "accent"}
             >
               <h2 className="text-h3" style={{
                 fontWeight: 'bold',
