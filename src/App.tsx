@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import GradientTypographyDemo from './snippets/gradientTypography/demo/DemoApp';
 import GlassTypographyDemo from './snippets/glassTypography/demo/DemoApp';
 import ContentStackDemo from './snippets/contentStack/demo/DemoApp';
+import TickertapeDemo from './snippets/tickertape/demo/DemoApp';
 import './App.css';
 
 const snippets = [
@@ -26,6 +27,13 @@ const snippets = [
     path: '/contentStack',
     component: ContentStackDemo,
     description: 'Scroll-activated content stack with smooth animations and customizable effects'
+  },
+  {
+    id: 'tickertape',
+    name: 'Tickertape',
+    path: '/tickertape',
+    component: TickertapeDemo,
+    description: 'Continuous scrolling ticker tape with customizable speed, styling, and brand integration'
   }
 ];
 

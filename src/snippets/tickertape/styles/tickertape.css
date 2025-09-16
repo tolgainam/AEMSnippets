@@ -1,0 +1,112 @@
+/* Import design tokens for typography classes */
+@import '../../../tokens/designTokens.css';
+
+/* Tickertape Styles */
+
+.tickertape-container {
+  position: relative;
+  width: 100% !important;
+  max-width: none;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+  /* Performance optimizations */
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+.tickertape-text {
+  display: inline-block;
+  white-space: nowrap;
+  animation: tickertape-scroll linear infinite;
+  will-change: transform;
+  min-width: 100%;
+  flex-shrink: 0;
+  /* Performance optimizations */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+/* Seamless continuous scrolling animation for text */
+@keyframes tickertape-scroll {
+  0% {
+    transform: translate3d(100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+/* Infinite scrolling animation for background images (game-style) */
+@keyframes tickertape-infinite-scroll {
+  0% {
+    transform: translate3d(0%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+/* No longer using CSS pseudo-element - content repetition handled in JavaScript */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tickertape-container {
+    contain: layout style paint;
+  }
+}
+
+/* Pause on hover support */
+.tickertape-container:hover .tickertape-text {
+  animation-play-state: inherit;
+}
+
+/* Theme-specific styles */
+.tickertape-container.theme-light {
+  background-color: #ffffff;
+  color: #000000;
+  border-color: #e1e5e9;
+}
+
+.tickertape-container.theme-dark {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border-color: #333333;
+}
+
+/* Typography classes with bold font weight */
+.text-poster { font-weight: bold; }
+.text-h1 { font-weight: bold; }
+.text-h2 { font-weight: bold; }
+.text-h3 { font-weight: bold; }
+.text-h4 { font-weight: bold; }
+.text-h5 { font-weight: bold; }
+.text-h6 { font-weight: bold; }
+
+/* Brand accent colors for borders - only top and bottom when border is enabled */
+.tickertape-container.brand-iqos {
+  border-top: 4px solid #00d4ff !important;
+  border-bottom: 4px solid #00d4ff !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+.tickertape-container.brand-zyn {
+  border-top: 4px solid #ff6b00 !important;
+  border-bottom: 4px solid #ff6b00 !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+.tickertape-container.brand-veev {
+  border-top: 4px solid #9c27b0 !important;
+  border-bottom: 4px solid #9c27b0 !important;
+  border-left: none !important;
+  border-right: none !important;
+}
