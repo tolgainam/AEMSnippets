@@ -65,3 +65,4 @@ The library is configured for npm publishing with:
 - TypeScript declarations generated
 - Both CommonJS and ESM builds
 - Proper peer dependencies for React
+- do not include Claude in the commit messages. Or anything related to Claude. Do not include Claude as a conributer as well.

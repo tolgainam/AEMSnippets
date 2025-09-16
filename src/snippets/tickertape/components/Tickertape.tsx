@@ -145,7 +145,8 @@ export const Tickertape: React.FC<TickertapeProps> = ({
 
   const textStyle: React.CSSProperties = {
     animationDuration: `${animationDuration}s`,
-    animationPlayState: isPaused ? 'paused' : 'running'
+    animationPlayState: isPaused ? 'paused' : 'running',
+    animation: backgroundImage ? 'none' : undefined // Don't animate transform when using background image
   };
 
   const handleMouseEnter = () => {
@@ -168,54 +169,33 @@ export const Tickertape: React.FC<TickertapeProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {backgroundImage ? (
-        // Infinite scrolling background technique with two layers
-        <>
-          <div
-            ref={textRef}
-            className="tickertape-background-layer"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              backgroundImage: `url(${backgroundImage})`,
-              backgroundRepeat: 'space',
-              backgroundSize: 'auto 98%',
-              backgroundPosition: 'left center',
-              animation: 'tickertape-infinite-scroll linear infinite',
-              animationDuration: `${animationDuration}s`,
-              animationPlayState: isPaused ? 'paused' : 'running'
-            }}
-          />
-          <div
-            className="tickertape-background-layer"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: '100%',
-              width: '100%',
-              height: '100%',
-              backgroundImage: `url(${backgroundImage})`,
-              backgroundRepeat: 'space',
-              backgroundSize: 'auto 98%',
-              backgroundPosition: 'left center',
-              animation: 'tickertape-infinite-scroll linear infinite',
-              animationDuration: `${animationDuration}s`,
-              animationPlayState: isPaused ? 'paused' : 'running'
-            }}
-          />
-        </>
-      ) : (
-        <div
-          ref={textRef}
-          className={`tickertape-text ${fontSize}`}
-          style={textStyle}
-        >
-          {repeatedText || text}
-        </div>
-      )}
+      <div
+        ref={textRef}
+        className={`tickertape-text ${fontSize}`}
+        style={{
+          ...textStyle,
+          ...(backgroundImage && {
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundRepeat: 'repeat-x',
+            backgroundSize: '150px 98%',
+            backgroundPosition: '0 center',
+            animation: `tickertape-background-scroll ${animationDuration}s linear infinite`,
+            animationPlayState: isPaused ? 'paused' : 'running',
+            minWidth: '200%', // Ensure enough width for seamless scrolling
+            height: '100%',
+            color: 'transparent' // Hide any text content when showing image
+          })
+        }}
+      >
+        {backgroundImage ? (
+          // Use invisible text to maintain dimensions for animation calculation
+          <span style={{ opacity: 0, userSelect: 'none' }}>
+            {text}
+          </span>
+        ) : (
+          repeatedText || text
+        )}
+      </div>
     </div>
   );
 };

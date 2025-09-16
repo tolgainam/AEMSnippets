@@ -43,13 +43,13 @@
   }
 }
 
-/* Infinite scrolling animation for background images (game-style) */
-@keyframes tickertape-infinite-scroll {
+/* Background position animation for infinite seamless image scrolling */
+@keyframes tickertape-background-scroll {
   0% {
-    transform: translate3d(0%, 0, 0);
+    background-position: 100% center;
   }
   100% {
-    transform: translate3d(-100%, 0, 0);
+    background-position: -100% center;
   }
 }
 
