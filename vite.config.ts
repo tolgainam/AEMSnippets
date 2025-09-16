@@ -12,7 +12,8 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         'gradientTypography/embed': resolve(__dirname, 'gradientTypography/embed.html'),
-        'glassTypography/embed': resolve(__dirname, 'glassTypography/embed.html')
+        'glassTypography/embed': resolve(__dirname, 'glassTypography/embed.html'),
+        'contentStack/embed': resolve(__dirname, 'contentStack/embed.html')
       }
     }
   },

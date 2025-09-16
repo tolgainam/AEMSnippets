@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import GradientTypographyDemo from './snippets/gradientTypography/demo/DemoApp';
 import GlassTypographyDemo from './snippets/glassTypography/demo/DemoApp';
+import ContentStackDemo from './snippets/contentStack/demo/DemoApp';
 import './App.css';
 
 const snippets = [
@@ -18,6 +19,13 @@ const snippets = [
     path: '/glassTypography',
     component: GlassTypographyDemo,
     description: 'Stunning glassmorphism text effects with brand tokens and liquid glass variants'
+  },
+  {
+    id: 'contentStack',
+    name: 'Content Stack',
+    path: '/contentStack',
+    component: ContentStackDemo,
+    description: 'Scroll-activated content stack with smooth animations and customizable effects'
   }
 ];
 
