@@ -145,31 +145,22 @@ const EmbedApp: React.FC = () => {
   }, []);
 
   return (
-    <div style={{
-      margin: 0,
-      padding: '20px',
-      width: '100%',
-      minHeight: '100vh',
-      backgroundColor: '#0a0014',
-      overflow: 'auto'
-    }}>
-      <GlowingBento
-        tiles={config.tiles}
-        textAutoHide={config.textAutoHide}
-        enableStars={config.enableStars}
-        enableSpotlight={config.enableSpotlight}
-        enableBorderGlow={config.enableBorderGlow}
-        disableAnimations={config.disableAnimations}
-        spotlightRadius={config.spotlightRadius}
-        particleCount={config.particleCount}
-        enableTilt={config.enableTilt}
-        glowColor={config.glowColor}
-        clickEffect={config.clickEffect}
-        enableMagnetism={config.enableMagnetism}
-        brand={config.brand}
-        theme={config.theme}
-      />
-    </div>
+    <GlowingBento
+      tiles={config.tiles}
+      textAutoHide={config.textAutoHide}
+      enableStars={config.enableStars}
+      enableSpotlight={config.enableSpotlight}
+      enableBorderGlow={config.enableBorderGlow}
+      disableAnimations={config.disableAnimations}
+      spotlightRadius={config.spotlightRadius}
+      particleCount={config.particleCount}
+      enableTilt={config.enableTilt}
+      glowColor={config.glowColor}
+      clickEffect={config.clickEffect}
+      enableMagnetism={config.enableMagnetism}
+      brand={config.brand}
+      theme={config.theme}
+    />
   );
 };
 
