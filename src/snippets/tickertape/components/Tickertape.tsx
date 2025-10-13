@@ -143,10 +143,12 @@ export const Tickertape: React.FC<TickertapeProps> = ({
     ...style
   };
 
-  const textStyle: React.CSSProperties = {
+  const textStyle: React.CSSProperties = backgroundImage ? {} : {
+    animationName: 'tickertape-scroll',
     animationDuration: `${animationDuration}s`,
-    animationPlayState: isPaused ? 'paused' : 'running',
-    animation: backgroundImage ? 'none' : undefined // Don't animate transform when using background image
+    animationTimingFunction: 'linear',
+    animationIterationCount: 'infinite',
+    animationPlayState: isPaused ? 'paused' : 'running'
   };
 
   const handleMouseEnter = () => {
