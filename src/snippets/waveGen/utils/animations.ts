@@ -139,7 +139,7 @@ export const degreesToRadians = (degrees: number): number => {
  * Create linear gradient with angle
  */
 export const createLinearGradient = (
-  id: string,
+  _id: string,
   colors: string[],
   angle: number
 ): { x1: string; y1: string; x2: string; y2: string; stops: Array<{ offset: string; color: string }> } => {

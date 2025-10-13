@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
   AdvancedWaveProps,
-  WaveLayer,
 } from '../types/waveTypes';
 import {
   generateWavePath,
@@ -48,7 +47,6 @@ export const CustomWaveEngine: React.FC<CustomWaveEngineProps> = ({
   flicker = { enabled: false, speed: 1, intensity: 0.3 },
   pulsate = { enabled: false, speed: 1, range: [0.8, 1.2] },
   reverse = false,
-  easing = 'linear',
   turbulence = 0,
   amplitudeVariation = 0,
   frequencyModulation = 0,

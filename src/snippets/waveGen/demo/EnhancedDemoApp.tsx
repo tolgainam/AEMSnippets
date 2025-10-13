@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { WaveGen } from '../components/WaveGen';
-import { Brand, BrandName } from '../../../tokens/designTokens';
+import { BrandName } from '../../../tokens/designTokens';
 import {
   WaveMode,
   WaveType,
@@ -121,15 +121,6 @@ const EnhancedWaveGenDemo: React.FC = () => {
   });
 
   const [newColor, setNewColor] = useState('#FF6AC6');
-
-  const getBrandColors = (brand: BrandName) => {
-    const brandData = Brand[brand];
-    return {
-      ...brandData.primary,
-      ...brandData.tints,
-      ...brandData.global,
-    };
-  };
 
   const addColor = () => {
     setConfig(prev => ({
