@@ -805,7 +805,13 @@ import { GlowingBento } from 'aem-snippets/glowingBento';
           </div>
           {showPreview && (
             <div
-              style={{ border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                width: '1535px',
+                maxWidth: '100%',
+                overflowX: 'auto'
+              }}
               dangerouslySetInnerHTML={{ __html: generateEmbedCode() }}
             />
           )}
