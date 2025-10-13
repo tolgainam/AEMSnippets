@@ -15,7 +15,8 @@ export default defineConfig({
         'glassTypography/embed': resolve(__dirname, 'glassTypography/embed.html'),
         'contentStack/embed': resolve(__dirname, 'contentStack/embed.html'),
         'tickertape/embed': resolve(__dirname, 'tickertape/embed.html'),
-        'waveGen/embed': resolve(__dirname, 'waveGen/embed.html')
+        'waveGen/embed': resolve(__dirname, 'waveGen/embed.html'),
+        'glowingBento/embed': resolve(__dirname, 'glowingBento/embed.html')
       }
     }
   },

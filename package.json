@@ -30,6 +30,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "gsap": "^3.13.0",
     "react": ">=16.8.0",
     "react-animated-waves": "^1.0.3",
     "react-dom": ">=16.8.0",

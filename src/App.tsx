@@ -5,6 +5,7 @@ import GlassTypographyDemo from './snippets/glassTypography/demo/DemoApp';
 import ContentStackDemo from './snippets/contentStack/demo/DemoApp';
 import TickertapeDemo from './snippets/tickertape/demo/DemoApp';
 import WaveGenDemo from './snippets/waveGen/demo/DemoApp';
+import GlowingBentoDemo from './snippets/glowingBento/demo/DemoApp';
 import './App.css';
 
 const snippets = [
@@ -42,6 +43,13 @@ const snippets = [
     path: '/waveGen',
     component: WaveGenDemo,
     description: 'Animated wave effects for beautiful UI backgrounds and decorative elements'
+  },
+  {
+    id: 'glowingBento',
+    name: 'GlowingBento',
+    path: '/glowingBento',
+    component: GlowingBentoDemo,
+    description: 'Interactive bento grid with glowing borders, particle effects, and customizable tiles'
   }
 ];
 
