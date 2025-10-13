@@ -107,7 +107,7 @@ const ParticleCard: React.FC<ParticleCardProps> = ({
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const particlesRef = useRef<HTMLElement[]>([]);
-  const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  const timeoutsRef = useRef<number[]>([]);
   const isHoveredRef = useRef(false);
   const memoizedParticles = useRef<HTMLElement[]>([]);
   const particlesInitialized = useRef(false);
@@ -176,7 +176,7 @@ const ParticleCard: React.FC<ParticleCardProps> = ({
           repeat: -1,
           yoyo: true
         });
-      }, index * 100);
+      }, index * 100) as unknown as number;
 
       timeoutsRef.current.push(timeoutId);
     });
