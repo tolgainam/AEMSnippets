@@ -249,24 +249,24 @@ export const baseTokens = {
             '1920px (XL)': '104px',
           },
           h1: {
-            '390px (XS)': '36px',
+            '390px (XS)': '44px',
+            '1536px (XL)': '72px',
+            '1920px (XL)': '72px',
+          },
+          h2: {
+            '390px (XS)': '40px',
             '1536px (XL)': '64px',
             '1920px (XL)': '64px',
           },
-          h2: {
-            '390px (XS)': '32px',
+          h3: {
+            '390px (XS)': '40px',
             '1536px (XL)': '56px',
             '1920px (XL)': '56px',
           },
-          h3: {
-            '390px (XS)': '28px',
+          h4: {
+            '390px (XS)': '32px',
             '1536px (XL)': '42px',
             '1920px (XL)': '42px',
-          },
-          h4: {
-            '390px (XS)': '24px',
-            '1536px (XL)': '32px',
-            '1920px (XL)': '32px',
           },
           h5: {
             '390px (XS)': '28px',
@@ -916,7 +916,7 @@ export const baseTokens = {
             'state-focused-error': brandToken.global.error,
             'state-error': brandToken.global.error,
             'state-readOnly': brandToken.tints.dark85,
-            'interaction-hover': brandToken.primary.main,
+            'interaction-hover': brandToken.tints.darker140,
             'interaction-loading': brandToken.tints.dark30,
             'interaction-active': brandToken.primary.main,
             'signal-warning': brandToken.global.warning,
@@ -941,7 +941,7 @@ export const baseTokens = {
             'state-focused-error': brandToken.global.fullWhite,
             'state-error': brandToken.global.fullWhite,
             'state-readOnly': brandToken.global.fullWhite,
-            'interaction-hover': brandToken.tints.darker140,
+            'interaction-hover': brandToken.primary.light,
             'interaction-loading': `${brandToken.global.fullBlack}87`, // 87% opacity
             'interaction-active': brandToken.primary.main,
             'signal-warning': brandToken.global.warning,
@@ -964,9 +964,9 @@ export const baseTokens = {
             'state-focused-error': brandToken.global.error,
             'state-error': brandToken.global.error,
             'state-readOnly': brandToken.tints.dark50,
-            'interaction-hover': brandToken.primary.light,
+            'interaction-hover': brandToken.primary.dark,
             'interaction-loading': brandToken.tints.dark50,
-            'interaction-active': brandToken.primary.light,
+            'interaction-active': brandToken.primary.dark,
             'signal-warning': brandToken.global.warning,
             'signal-error': brandToken.global.error,
             'signal-info': brandToken.global.info,
@@ -985,7 +985,7 @@ export const baseTokens = {
             'state-focused-error': brandToken.global.error,
             'state-error': brandToken.global.error,
             'state-readOnly': brandToken.tints.dark85,
-            'interaction-hover': brandToken.primary.main,
+            'interaction-hover': brandToken.primary.light,
             'interaction-loading': brandToken.tints.dark30,
             'interaction-active': brandToken.primary.main,
             'signal-warning': brandToken.global.warning,

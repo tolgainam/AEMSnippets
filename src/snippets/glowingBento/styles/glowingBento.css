@@ -29,7 +29,7 @@
   min-height: 200px;
   width: 100%;
   max-width: 100%;
-  padding: 1.25em;
+  padding: 24px; /* Mobile padding */
   border-radius: 20px;
   border: 1px solid var(--border-color);
   background: var(--background-dark);
@@ -41,6 +41,12 @@
   --glow-y: 50%;
   --glow-intensity: 0;
   --glow-radius: 200px;
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 32px; /* Desktop padding */
+  }
 }
 
 .card:hover {
@@ -67,6 +73,7 @@
 
 .card__label {
   font-size: 16px;
+  margin: 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
@@ -79,13 +86,14 @@
 .card__title {
   font-weight: 400;
   font-size: 16px;
-  margin: 0 0 0.25em;
+  margin: 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .card__description {
   font-size: 12px;
   line-height: 1.2;
+  margin: 0;
   opacity: 0.9;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
@@ -108,42 +116,102 @@
   line-clamp: var(--clamp-desc);
 }
 
-@media (max-width: 599px) {
+/* Mobile: All tiles vertically stacked with fixed dimensions */
+@media (max-width: 767px) {
   .card-grid {
     grid-template-columns: 1fr;
-    width: 90%;
+    width: 100%;
+    max-width: 372px;
     margin: 0 auto;
     padding: 0.5em;
+    gap: 1em;
   }
 
   .card {
-    width: 100%;
-    min-height: 180px;
+    width: 372px;
+    height: 512px;
+    min-height: 512px;
+    aspect-ratio: auto; /* Override aspect ratio on mobile */
   }
 }
 
-@media (min-width: 600px) {
+/* Tablet: 2 column grid */
+@media (min-width: 768px) and (max-width: 1023px) {
   .card-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* Desktop Layouts - Different layouts based on tile count */
+
+/* 3 Tiles: Horizontal 3-column grid */
 @media (min-width: 1024px) {
-  .card-grid {
+  .card-grid.tiles-3 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr;
+  }
+}
+
+/* 4 Tiles: 2x2 grid */
+@media (min-width: 1024px) {
+  .card-grid.tiles-4 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+}
+
+/* 5 Tiles: Custom grid layout - 2 on top, 3 on bottom */
+@media (min-width: 1024px) {
+  .card-grid.tiles-5 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  /* Top row: 2 tiles, each spanning 2 columns */
+  .card-grid.tiles-5 .card:nth-child(1) {
+    grid-column: 1 / span 2;
+    grid-row: 1;
+  }
+
+  .card-grid.tiles-5 .card:nth-child(2) {
+    grid-column: 3 / span 2;
+    grid-row: 1;
+  }
+
+  /* Bottom row: 3 tiles - 2 single + 1 double width */
+  .card-grid.tiles-5 .card:nth-child(3) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .card-grid.tiles-5 .card:nth-child(4) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .card-grid.tiles-5 .card:nth-child(5) {
+    grid-column: 3 / span 2;
+    grid-row: 2;
+  }
+}
+
+/* 6 Tiles: Keep original complex layout */
+@media (min-width: 1024px) {
+  .card-grid.tiles-6 {
     grid-template-columns: repeat(4, 1fr);
   }
 
-  .card:nth-child(3) {
+  .card-grid.tiles-6 .card:nth-child(3) {
     grid-column: span 2;
     grid-row: span 2;
   }
 
-  .card:nth-child(4) {
+  .card-grid.tiles-6 .card:nth-child(4) {
     grid-column: 1 / span 2;
     grid-row: 2 / span 2;
   }
 
-  .card:nth-child(6) {
+  .card-grid.tiles-6 .card:nth-child(6) {
     grid-column: 4;
     grid-row: 3;
   }

@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { gsap } from 'gsap';
-import { BrandName, createThemeTokens } from '../../../tokens/designTokens';
+import { BrandName, createThemeTokens, Brand, typographyTokens, TypographySize } from '../../../tokens/designTokens';
+import '../../gradientTypography/styles/fonts.css';
 import '../styles/glowingBento.css';
 
 const DEFAULT_PARTICLE_COUNT = 12;
@@ -15,6 +16,11 @@ export interface BentoTile {
   backgroundColor?: string;
   backgroundImage?: string;
   backgroundGradient?: string;
+  backgroundPositionX?: 'left' | 'center' | 'right';
+  backgroundPositionY?: 'top' | 'center' | 'bottom';
+  titleStyle?: TypographySize;
+  descriptionStyle?: TypographySize;
+  labelStyle?: TypographySize;
 }
 
 export interface GlowingBentoProps {
@@ -468,13 +474,17 @@ const GlobalSpotlight: React.FC<GlobalSpotlightProps> = ({
 interface BentoCardGridProps {
   children: React.ReactNode;
   gridRef: React.RefObject<HTMLDivElement>;
+  tileCount: number;
 }
 
-const BentoCardGrid: React.FC<BentoCardGridProps> = ({ children, gridRef }) => (
-  <div className="card-grid bento-section" ref={gridRef}>
-    {children}
-  </div>
-);
+const BentoCardGrid: React.FC<BentoCardGridProps> = ({ children, gridRef, tileCount }) => {
+  const tileCountClass = `tiles-${tileCount}`;
+  return (
+    <div className={`card-grid bento-section ${tileCountClass}`} ref={gridRef}>
+      {children}
+    </div>
+  );
+};
 
 const useMobileDetection = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -489,6 +499,27 @@ const useMobileDetection = () => {
   }, []);
 
   return isMobile;
+};
+
+// Helper function to get responsive typography styles
+const getTypographyStyle = (styleToken?: TypographySize): React.CSSProperties => {
+  if (!styleToken) return {};
+
+  const sizeTokens = typographyTokens.size[styleToken];
+  const lineHeightTokens = typographyTokens.lineHeight[styleToken];
+
+  if (!sizeTokens || !lineHeightTokens) return {};
+
+  // Get mobile and desktop values
+  const mobileFontSize = sizeTokens['390px (XS)'];
+  const desktopFontSize = sizeTokens['1536px (XL)'];
+  const mobileLineHeight = lineHeightTokens['390px (XS)'];
+  const desktopLineHeight = lineHeightTokens['1536px (XL)'];
+
+  return {
+    fontSize: `clamp(${mobileFontSize}, calc(${mobileFontSize} + (${parseInt(desktopFontSize)} - ${parseInt(mobileFontSize)}) * ((100vw - 390px) / (1536 - 390))), ${desktopFontSize})`,
+    lineHeight: `clamp(${mobileLineHeight}, calc(${mobileLineHeight} + (${parseInt(desktopLineHeight)} - ${parseInt(mobileLineHeight)}) * ((100vw - 390px) / (1536 - 390))), ${desktopLineHeight})`,
+  };
 };
 
 export const GlowingBento: React.FC<GlowingBentoProps> = ({
@@ -513,16 +544,22 @@ export const GlowingBento: React.FC<GlowingBentoProps> = ({
   const isMobile = useMobileDetection();
   const shouldDisableAnimations = disableAnimations || isMobile;
 
-  // Get theme tokens
+  // Get theme tokens and brand typography
   const themeTokens = createThemeTokens(brand);
   const currentTheme = themeTokens[theme];
+  const brandData = Brand[brand];
+  const fontFamily = brandData.typography.fontFamily.body;
+  const headingFontFamily = brandData.typography.fontFamily.heading;
+  const textColor = currentTheme.content.primary;
 
   const getBackgroundStyle = (tile: BentoTile): React.CSSProperties => {
     if (tile.backgroundImage) {
+      const posX = tile.backgroundPositionX || 'center';
+      const posY = tile.backgroundPositionY || 'center';
       return {
         backgroundImage: `url(${tile.backgroundImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: `${posX} ${posY}`,
         backgroundRepeat: 'no-repeat'
       };
     } else if (tile.backgroundGradient) {
@@ -552,15 +589,34 @@ export const GlowingBento: React.FC<GlowingBentoProps> = ({
         />
       )}
 
-      <BentoCardGrid gridRef={gridRef}>
+      <BentoCardGrid gridRef={gridRef} tileCount={tiles.length}>
         {tiles.map((tile, index) => {
           const baseClassName = `card ${textAutoHide ? 'card--text-autohide' : ''} ${enableBorderGlow ? 'card--border-glow' : ''}`;
           const cardProps = {
             className: baseClassName,
             style: {
               ...getBackgroundStyle(tile),
-              '--glow-color': glowColor
+              '--glow-color': glowColor,
+              color: textColor,
+              fontFamily: fontFamily
             } as React.CSSProperties
+          };
+
+          // Apply typography styles
+          const titleStyle: React.CSSProperties = {
+            ...getTypographyStyle(tile.titleStyle),
+            fontFamily: headingFontFamily,
+            color: textColor
+          };
+
+          const descriptionStyle: React.CSSProperties = {
+            ...getTypographyStyle(tile.descriptionStyle),
+            color: textColor
+          };
+
+          const labelStyle: React.CSSProperties = {
+            ...getTypographyStyle(tile.labelStyle),
+            color: textColor
           };
 
           if (enableStars) {
@@ -576,11 +632,11 @@ export const GlowingBento: React.FC<GlowingBentoProps> = ({
                 enableMagnetism={enableMagnetism}
               >
                 <div className="card__header">
-                  <div className="card__label">{tile.label}</div>
+                  <div className="card__label" style={labelStyle}>{tile.label}</div>
                 </div>
                 <div className="card__content">
-                  <h2 className="card__title">{tile.title}</h2>
-                  <p className="card__description">{tile.description}</p>
+                  <h2 className="card__title" style={titleStyle}>{tile.title}</h2>
+                  <p className="card__description" style={descriptionStyle}>{tile.description}</p>
                 </div>
               </ParticleCard>
             );
@@ -589,11 +645,11 @@ export const GlowingBento: React.FC<GlowingBentoProps> = ({
           return (
             <div key={index} {...cardProps}>
               <div className="card__header">
-                <div className="card__label">{tile.label}</div>
+                <div className="card__label" style={labelStyle}>{tile.label}</div>
               </div>
               <div className="card__content">
-                <h2 className="card__title">{tile.title}</h2>
-                <p className="card__description">{tile.description}</p>
+                <h2 className="card__title" style={titleStyle}>{tile.title}</h2>
+                <p className="card__description" style={descriptionStyle}>{tile.description}</p>
               </div>
             </div>
           );
