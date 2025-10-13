@@ -14,7 +14,8 @@ export default defineConfig({
         'gradientTypography/embed': resolve(__dirname, 'gradientTypography/embed.html'),
         'glassTypography/embed': resolve(__dirname, 'glassTypography/embed.html'),
         'contentStack/embed': resolve(__dirname, 'contentStack/embed.html'),
-        'tickertape/embed': resolve(__dirname, 'tickertape/embed.html')
+        'tickertape/embed': resolve(__dirname, 'tickertape/embed.html'),
+        'waveGen/embed': resolve(__dirname, 'waveGen/embed.html')
       }
     }
   },

@@ -2,6 +2,7 @@
 export * as gradientTypography from './snippets/gradientTypography';
 export * as contentStack from './snippets/contentStack';
 export * as tickertape from './snippets/tickertape';
+export * as waveGen from './snippets/waveGen';
 
 // Also export components at the root level for backward compatibility
 export { GradientText } from './snippets/gradientTypography/components/GradientText';
@@ -10,3 +11,5 @@ export { ContentStack, ContentStackItem } from './snippets/contentStack/componen
 export type { ContentStackProps, ContentStackItemProps } from './snippets/contentStack/components/ContentStack';
 export { Tickertape } from './snippets/tickertape/components/Tickertape';
 export type { TickertapeProps } from './snippets/tickertape/components/Tickertape';
+export { WaveGen } from './snippets/waveGen/components/WaveGen';
+export type { WaveGenProps } from './snippets/waveGen/components/WaveGen';

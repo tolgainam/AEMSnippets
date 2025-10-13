@@ -1,0 +1,13 @@
+.wave-gen-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Ensure smooth rendering */
+.wave-gen-container svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
