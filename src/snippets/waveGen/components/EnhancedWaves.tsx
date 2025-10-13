@@ -28,6 +28,8 @@ export interface EnhancedWavesProps extends React.CanvasHTMLAttributes<HTMLCanva
   amplitudeVariation?: number;
   /** Line thickness/stroke width */
   lineWidth?: number;
+  /** Animation speed multiplier (0.1-5) */
+  speed?: number;
 }
 
 export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
@@ -36,6 +38,7 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
   turbulence = 0,
   amplitudeVariation = 0,
   lineWidth = 2,
+  speed = 1,
   ...props
 }) => {
   const amplitudeRef = useRef(amplitude);
@@ -103,7 +106,7 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
     }
 
     const animate = () => {
-      const time = Date.now() * 0.0015;
+      const time = Date.now() * 0.0015 * speed;
 
       // Smoothly interpolate amplitude changes
       amplitudeRef.current = lerp(amplitudeRef.current, targetAmplitudeRef.current, 0.1);
@@ -122,19 +125,19 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
           amplitude: oscillatingAmplitude,
           frequency: 0.02,
           alpha: 0.6,
-          speed: 0.001,
+          speed: 0.001 * speed,
         },
         {
           amplitude: oscillatingAmplitude * 0.6,
           frequency: 0.03,
           alpha: 0.4,
-          speed: 0.004,
+          speed: 0.004 * speed,
         },
         {
           amplitude: oscillatingAmplitude * 0.3,
           frequency: 0.04,
           alpha: 0.2,
-          speed: 0.007,
+          speed: 0.007 * speed,
         },
       ];
 
@@ -189,7 +192,7 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [colors, drawWaveform, turbulence, amplitudeVariation]);
+  }, [colors, drawWaveform, turbulence, amplitudeVariation, speed]);
 
   // Render the canvas
   return (

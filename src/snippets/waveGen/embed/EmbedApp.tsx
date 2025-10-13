@@ -8,10 +8,13 @@ interface EmbedConfig {
   height: string;
   backgroundColor: string;
   backgroundGradient: string;
-  position: 'top' | 'bottom';
   opacity: number;
   brand: BrandName;
   theme: 'light' | 'dark';
+  turbulence: number;
+  amplitudeVariation: number;
+  lineWidth: number;
+  speed: number;
 }
 
 const EmbedApp: React.FC = () => {
@@ -21,10 +24,13 @@ const EmbedApp: React.FC = () => {
     height: '200px',
     backgroundColor: '',
     backgroundGradient: '',
-    position: 'bottom',
     opacity: 1,
     brand: 'iqos',
     theme: 'light',
+    turbulence: 0,
+    amplitudeVariation: 0,
+    lineWidth: 2,
+    speed: 1,
   });
 
   useEffect(() => {
@@ -58,10 +64,6 @@ const EmbedApp: React.FC = () => {
       newConfig.backgroundGradient = decodeURIComponent(urlParams.get('backgroundGradient') || '');
     }
 
-    if (urlParams.has('position')) {
-      newConfig.position = urlParams.get('position') as 'top' | 'bottom' || 'bottom';
-    }
-
     if (urlParams.has('opacity')) {
       newConfig.opacity = parseFloat(urlParams.get('opacity') || '1');
     }
@@ -72,6 +74,22 @@ const EmbedApp: React.FC = () => {
 
     if (urlParams.has('theme')) {
       newConfig.theme = urlParams.get('theme') as 'light' | 'dark' || 'light';
+    }
+
+    if (urlParams.has('turbulence')) {
+      newConfig.turbulence = parseFloat(urlParams.get('turbulence') || '0');
+    }
+
+    if (urlParams.has('amplitudeVariation')) {
+      newConfig.amplitudeVariation = parseFloat(urlParams.get('amplitudeVariation') || '0');
+    }
+
+    if (urlParams.has('lineWidth')) {
+      newConfig.lineWidth = parseInt(urlParams.get('lineWidth') || '2');
+    }
+
+    if (urlParams.has('speed')) {
+      newConfig.speed = parseFloat(urlParams.get('speed') || '1');
     }
 
     setConfig(prevConfig => ({ ...prevConfig, ...newConfig }));
@@ -91,10 +109,13 @@ const EmbedApp: React.FC = () => {
         height={config.height}
         backgroundColor={config.backgroundColor}
         backgroundGradient={config.backgroundGradient}
-        position={config.position}
         opacity={config.opacity}
         brand={config.brand}
         theme={config.theme}
+        turbulence={config.turbulence}
+        amplitudeVariation={config.amplitudeVariation}
+        lineWidth={config.lineWidth}
+        speed={config.speed}
       />
     </div>
   );

@@ -13,11 +13,11 @@ export interface WaveGenProps {
   theme?: 'light' | 'dark';
   backgroundColor?: string;
   backgroundGradient?: string;
-  position?: 'top' | 'bottom';
   opacity?: number;
   turbulence?: number;
   amplitudeVariation?: number;
   lineWidth?: number;
+  speed?: number;
 }
 
 export const WaveGen: React.FC<WaveGenProps> = ({
@@ -30,11 +30,11 @@ export const WaveGen: React.FC<WaveGenProps> = ({
   theme = 'light',
   backgroundColor,
   backgroundGradient,
-  position = 'bottom',
   opacity = 1,
   turbulence = 0,
   amplitudeVariation = 0,
   lineWidth = 2,
+  speed = 1,
 }) => {
   // Get theme tokens for this brand
   const themeTokens = createThemeTokens(brand);
@@ -68,9 +68,10 @@ export const WaveGen: React.FC<WaveGenProps> = ({
 
   const wavesContainerStyle: React.CSSProperties = {
     position: 'absolute',
-    [position]: 0,
+    top: '50%',
     left: 0,
     right: 0,
+    transform: 'translateY(-50%)',
     opacity: opacity,
     pointerEvents: 'none',
   };
@@ -87,6 +88,7 @@ export const WaveGen: React.FC<WaveGenProps> = ({
           turbulence={turbulence}
           amplitudeVariation={amplitudeVariation}
           lineWidth={lineWidth}
+          speed={speed}
         />
       </div>
     </div>

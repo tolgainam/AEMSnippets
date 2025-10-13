@@ -8,13 +8,13 @@ interface ConfigState {
   height: string;
   backgroundColor: string;
   backgroundGradient: string;
-  position: 'top' | 'bottom';
   opacity: number;
   brand: BrandName;
   theme: 'light' | 'dark';
   turbulence: number;
   amplitudeVariation: number;
   lineWidth: number;
+  speed: number;
 }
 
 const WaveGenDemo: React.FC = () => {
@@ -24,13 +24,13 @@ const WaveGenDemo: React.FC = () => {
     height: '200px',
     backgroundColor: '',
     backgroundGradient: '',
-    position: 'bottom',
     opacity: 1,
     brand: 'iqos',
     theme: 'light',
     turbulence: 0,
     amplitudeVariation: 0,
     lineWidth: 2,
+    speed: 1,
   });
 
   const [newColor, setNewColor] = useState('#FF6AC6');
@@ -53,10 +53,13 @@ const WaveGenDemo: React.FC = () => {
       height: config.height,
       backgroundColor: config.backgroundColor,
       backgroundGradient: config.backgroundGradient,
-      position: config.position,
       opacity: config.opacity.toString(),
       brand: config.brand,
       theme: config.theme,
+      turbulence: config.turbulence.toString(),
+      amplitudeVariation: config.amplitudeVariation.toString(),
+      lineWidth: config.lineWidth.toString(),
+      speed: config.speed.toString(),
     });
 
     return `${window.location.origin}/AEMSnippets/waveGen/embed.html?${params.toString()}`;
@@ -133,13 +136,13 @@ const WaveGenDemo: React.FC = () => {
           height={config.height}
           backgroundColor={config.backgroundColor}
           backgroundGradient={config.backgroundGradient}
-          position={config.position}
           opacity={config.opacity}
           brand={config.brand}
           theme={config.theme}
           turbulence={config.turbulence}
           amplitudeVariation={config.amplitudeVariation}
           lineWidth={config.lineWidth}
+          speed={config.speed}
         />
       </div>
 
@@ -308,18 +311,6 @@ const WaveGenDemo: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '5px' }}>Wave Position:</label>
-            <select
-              value={config.position}
-              onChange={(e) => setConfig(prev => ({ ...prev, position: e.target.value as 'top' | 'bottom' }))}
-              style={{ width: '100%', padding: '8px' }}
-            >
-              <option value="top">Top</option>
-              <option value="bottom">Bottom</option>
-            </select>
-          </div>
-
-          <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', marginBottom: '5px' }}>Wave Opacity:</label>
             <input
               type="range"
@@ -383,6 +374,23 @@ const WaveGenDemo: React.FC = () => {
               Makes waves pulsate/breathe in and out
             </small>
           </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '5px' }}>Animation Speed:</label>
+            <input
+              type="range"
+              min="0.1"
+              max="5"
+              step="0.1"
+              value={config.speed}
+              onChange={(e) => setConfig(prev => ({ ...prev, speed: parseFloat(e.target.value) }))}
+              style={{ width: '100%' }}
+            />
+            <span>{config.speed.toFixed(1)}x</span>
+            <small style={{ display: 'block', color: '#666', marginTop: '5px' }}>
+              Controls how fast the waves animate
+            </small>
+          </div>
         </div>
 
         <div>
@@ -401,13 +409,13 @@ import { WaveGen } from 'aem-snippets/waveGen';
   height="${config.height}"
   backgroundColor="${config.backgroundColor}"
   backgroundGradient="${config.backgroundGradient}"
-  position="${config.position}"
   opacity={${config.opacity}}
   brand="${config.brand}"
   theme="${config.theme}"
   turbulence={${config.turbulence}}
   amplitudeVariation={${config.amplitudeVariation}}
   lineWidth={${config.lineWidth}}
+  speed={${config.speed}}
 />`}
             </pre>
           </div>
