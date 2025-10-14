@@ -276,6 +276,10 @@ export const ConfiguratorApp: React.FC = () => {
     const lines: string[] = [];
 
     lines.push('=== AEM iframe Component Configuration ===\n');
+    lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+
+    // Method 1: Individual Parameters (Recommended)
+    lines.push('METHOD 1: Individual Parameters (Recommended)\n');
     lines.push('Base URL:');
     lines.push('https://tolgainam.github.io/AEMSnippets/3dProductCard/embed.html\n');
     lines.push('Key/Value Pairs:');
@@ -308,9 +312,23 @@ export const ConfiguratorApp: React.FC = () => {
       lines.push(`keyframe${i} = ${JSON.stringify(kf)}`);
     });
 
+    lines.push('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+
+    // Method 2: Single Base64 Config Parameter
+    const base64Config = btoa(JSON.stringify(config));
+    lines.push('METHOD 2: Single Config Parameter (Alternative)\n');
+    lines.push('Base URL:');
+    lines.push('https://tolgainam.github.io/AEMSnippets/3dProductCard/embed.html\n');
+    lines.push('Key/Value Pairs:');
+    lines.push(`config = ${base64Config}`);
+
+    lines.push('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    lines.push('\nNOTE: Method 1 is recommended for AEM as it\'s easier to');
+    lines.push('configure. Method 2 is more compact but harder to modify.');
+
     const output = lines.join('\n');
     navigator.clipboard.writeText(output);
-    alert('AEM Key/Value pairs copied to clipboard!');
+    alert('AEM configuration copied to clipboard!\n\nTwo methods included:\n• Method 1: Individual parameters (recommended)\n• Method 2: Single Base64 config (compact)');
   };
 
   const selectedKeyframe = config.keyframes[selectedKeyframeIndex];
