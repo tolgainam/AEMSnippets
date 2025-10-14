@@ -6,6 +6,19 @@ import './EmbedApp.css';
 const EmbedApp: React.FC = () => {
   const [config, setConfig] = useState<ProductCard3DConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(
+    typeof window !== 'undefined' ? window.innerWidth : 1024
+  );
+
+  // Handle window resize for responsive behavior
+  useEffect(() => {
+    const handleResize = () => {
+      setContainerWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     try {
@@ -20,6 +33,15 @@ const EmbedApp: React.FC = () => {
       const animationFps = params.get('animationFps') || params.get('fps');
 
       if (modelPath) {
+        // Parse camera parameters
+        const cameraX = params.get('cameraX');
+        const cameraY = params.get('cameraY');
+        const cameraZ = params.get('cameraZ');
+        const targetX = params.get('targetX');
+        const targetY = params.get('targetY');
+        const targetZ = params.get('targetZ');
+        const fov = params.get('fov');
+
         // Build config from individual URL parameters
         parsedConfig = {
           modelPath,
@@ -29,9 +51,17 @@ const EmbedApp: React.FC = () => {
           },
           keyframes: [],
           camera: {
-            position: [0, 0, 5],
-            fov: 50,
-            target: [0, 0, 0]
+            position: [
+              cameraX ? parseFloat(cameraX) : 0,
+              cameraY ? parseFloat(cameraY) : 0,
+              cameraZ ? parseFloat(cameraZ) : 5
+            ],
+            fov: fov ? parseInt(fov) : 50,
+            target: [
+              targetX ? parseFloat(targetX) : 0,
+              targetY ? parseFloat(targetY) : 0,
+              targetZ ? parseFloat(targetZ) : 0
+            ]
           },
           style: {
             brand: (params.get('brand') as any) || 'iqos',
@@ -138,8 +168,12 @@ const EmbedApp: React.FC = () => {
               <li><code>message</code> - Description text</li>
               <li><code>brand</code> - iqos, zyn, or veev</li>
               <li><code>theme</code> - light or dark</li>
+              <li><code>overlayPosition</code> - left, right, center, or bottom</li>
               <li><code>animationFrames</code> - Total animation frames (default: 360)</li>
               <li><code>animationFps</code> - Frames per second (default: 30)</li>
+              <li><code>cameraX</code>, <code>cameraY</code>, <code>cameraZ</code> - Camera position (defaults: 0, 0, 5)</li>
+              <li><code>targetX</code>, <code>targetY</code>, <code>targetZ</code> - Camera target (defaults: 0, 0, 0)</li>
+              <li><code>fov</code> - Field of view (default: 50)</li>
               <li><code>keyframe0</code>, <code>keyframe1</code>, etc. - JSON keyframe objects</li>
             </ul>
           </details>
@@ -161,7 +195,7 @@ const EmbedApp: React.FC = () => {
     <div className="embed-container">
       <ProductCard3D
         config={config}
-        width="100%"
+        width={containerWidth}
         height="100vh"
         onButtonClick={(url) => {
           window.parent.postMessage({ type: 'buttonClick', url }, '*');
