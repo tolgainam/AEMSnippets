@@ -262,7 +262,7 @@ export const ConfiguratorApp: React.FC = () => {
 
   const generateEmbedCode = () => {
     const encodedConfig = encodeURIComponent(JSON.stringify(config));
-    const embedUrl = `https://YOUR-DOMAIN.github.io/AEMSnippets/3dProductCard/embed.html?config=${encodedConfig}`;
+    const embedUrl = `https://tolgainam.github.io/AEMSnippets/3dProductCard/embed.html?config=${encodedConfig}`;
     const iframeCode = `<iframe src="${embedUrl}" width="100%" height="600" frameborder="0"></iframe>`;
 
     navigator.clipboard.writeText(iframeCode);

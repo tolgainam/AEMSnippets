@@ -18,9 +18,8 @@ const EmbedApp: React.FC = () => {
         return;
       }
 
-      // Decode and parse the configuration
-      const decodedConfig = decodeURIComponent(configParam);
-      const parsedConfig: ProductCard3DConfig = JSON.parse(decodedConfig);
+      // Parse the configuration (URLSearchParams already decodes it)
+      const parsedConfig: ProductCard3DConfig = JSON.parse(configParam);
 
       // Validate required fields
       if (!parsedConfig.modelPath) {
