@@ -4,7 +4,8 @@
 }
 
 .app-content {
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 40px);
+  overflow: hidden;
 }
 
 /* Navigation Bar */
@@ -24,12 +25,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  height: 40px;
 }
 
 .nav-brand .brand-link {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 600;
   color: #1e293b;
   text-decoration: none;
   transition: color 0.2s ease;
@@ -45,12 +46,13 @@
 }
 
 .nav-item {
-  padding: 12px 20px;
+  padding: 6px 12px;
   color: #64748b;
   text-decoration: none;
+  font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.2s ease;
-  border-radius: 8px;
+  border-radius: 6px;
   position: relative;
 }
 
@@ -68,8 +70,8 @@
   content: '';
   position: absolute;
   bottom: -1px;
-  left: 20px;
-  right: 20px;
+  left: 12px;
+  right: 12px;
   height: 2px;
   background-color: #3b82f6;
 }

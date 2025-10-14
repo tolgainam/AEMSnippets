@@ -6,6 +6,7 @@ import ContentStackDemo from './snippets/contentStack/demo/DemoApp';
 import TickertapeDemo from './snippets/tickertape/demo/DemoApp';
 import WaveGenDemo from './snippets/waveGen/demo/DemoApp';
 import GlowingBentoDemo from './snippets/glowingBento/demo/DemoApp';
+import ProductCard3DDemo from './snippets/3dProductCard/configurator/ConfiguratorApp';
 import './App.css';
 
 const snippets = [
@@ -50,6 +51,13 @@ const snippets = [
     path: '/glowingBento',
     component: GlowingBentoDemo,
     description: 'Interactive bento grid with glowing borders, particle effects, and customizable tiles'
+  },
+  {
+    id: '3dProductCard',
+    name: '3D Product Card',
+    path: '/3dProductCard',
+    component: ProductCard3DDemo,
+    description: 'Interactive 3D product showcase with animated content overlays and keyframe navigation'
   }
 ];
 
@@ -108,7 +116,7 @@ const App: React.FC = () => {
             {snippets.map(snippet => (
               <Route
                 key={snippet.id}
-                path={snippet.path}
+                path={`${snippet.path}/*`}
                 element={<snippet.component />}
               />
             ))}

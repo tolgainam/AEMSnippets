@@ -16,7 +16,8 @@ export default defineConfig({
         'contentStack/embed': resolve(__dirname, 'contentStack/embed.html'),
         'tickertape/embed': resolve(__dirname, 'tickertape/embed.html'),
         'waveGen/embed': resolve(__dirname, 'waveGen/embed.html'),
-        'glowingBento/embed': resolve(__dirname, 'glowingBento/embed.html')
+        'glowingBento/embed': resolve(__dirname, 'glowingBento/embed.html'),
+        '3dProductCard/embed': resolve(__dirname, '3dProductCard/embed.html')
       }
     }
   },

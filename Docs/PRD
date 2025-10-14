@@ -1,0 +1,373 @@
+# Product Requirements Document: 3D Product Card
+
+## 1. Product Overview
+
+### 1.1 Purpose
+A web-based tool that enables users to create interactive 3D product showcases with customizable content overlays and navigation, exportable as embeddable iframes for use on external websites.
+
+### 1.2 Use Case
+Interactive product banners where users can navigate through different product features using prev/next buttons while the 3D model animates through predefined keyframes.
+
+### 1.3 Tech Stack
+- React
+- React Three Fiber (R3F)
+- @react-three/drei
+- Three.js
+- GLB format for 3D assets
+- Existing designtokens.ts for styling
+
+## 2. Core Functionality
+
+### 2.1 3D Asset Management
+**Requirements:**
+- Users can upload GLB files (pre-compressed with KTX2/Draco)
+- Users can provide a URL to a GLB file instead of uploading
+- Single 3D asset per configuration
+- GLB must contain baked animations and textures
+- Support for CORS-enabled URLs when using URL input
+
+**Constraints:**
+- No file size limit specified (recommend 50MB max for performance)
+- No automatic compression (user responsibility)
+
+### 2.2 Animation Configuration
+
+**Frame Structure:**
+- User defines:
+  - Total number of frames (e.g., 360, 420)
+  - Keyframe interval (e.g., every 30, 60 frames)
+
+
+**Playback Rules:**
+- No looping
+- Linear navigation only (prev/next buttons)
+
+
+### 2.3 Content Configuration (Per Keyframe)
+
+**For each content keyframe, users can define:**
+
+1. **Title** (required)
+   - Text input
+   - Styled using designtokens.ts
+
+2. **Message** (required)
+   - Text area input
+   - Styled using designtokens.ts
+
+3. **Button** (optional)
+   - Button text
+   - URL
+   - Target (_blank, _self)
+   - Theme (light/dark from brand library)
+   - Styled using designtokens.ts
+
+
+
+### 2.4 Styling Options
+
+Users can customize:
+- **Typography**: Font families from designtokens.ts
+- **Colors**: Text colors, background colors from designtokens.ts
+- **Button Theme**: Light/dark variants from brand library
+- **Background**: Container background color
+
+### 2.5 Preview Functionality
+
+**Requirements:**
+- Real-time preview of the 3D animation with overlays
+- Preview shows:
+  - 3D model rendering
+  - Animation playback
+  - Content overlays at keyframes
+  - Prev/Next navigation buttons
+  - Exact appearance of final embed
+
+**Behavior:**
+- Users can test navigation
+- Users can see styling changes in real-time
+- Preview matches embed output exactly
+
+### 2.6 Export Functionality
+
+**Output 1: Iframe Embed Code**
+```html
+<iframe src="[hosted-url]?config=[config-hash]" width="[fixed]" height="[fixed]" frameborder="0"></iframe>
+```
+
+**Output 2: JSON Configuration**
+```json
+{
+  "assetSource": "upload|url",
+  "assetUrl": "https://...",
+  "totalFrames": 360,
+  "keyframeInterval": 60,
+  "dimensions": {
+    "width": 800,
+    "height": 600
+  },
+  "styling": {
+    "backgroundColor": "#000000",
+    "fontFamily": "Inter",
+    "colors": {...}
+  },
+  "keyframes": [
+    {
+      "frame": 120,
+      "title": "Feature 1",
+      "message": "Description...",
+      "button": {
+        "text": "Learn More",
+        "url": "https://...",
+        "target": "_blank",
+        "theme": "light"
+      }
+    }
+  ]
+}
+```
+
+**Export Features:**
+- Copy iframe code to clipboard
+- Download JSON config file
+- JSON includes all configuration data
+- If asset was uploaded, JSON stores the uploaded file URL (requires hosting solution)
+
+### 2.7 Import Functionality
+
+**Requirements:**
+- Users can upload/paste JSON config
+- Tool restores all settings from JSON
+- If JSON references a URL, fetch the 3D asset from that URL
+- Validate JSON structure before import
+- Show error messages for invalid JSON
+
+## 3. User Interface
+
+### 3.1 Configuration Screen (Creator Tool)
+
+**Layout Sections:**
+
+1. **Asset Upload**
+   - Upload GLB button
+   - OR URL input field
+   - File preview/name display
+
+2. **Animation Settings**
+   - Total frames (number input)
+   - Keyframe interval (number input)
+
+3. **Keyframe Content Editor**
+   - List/tabs for each content keyframe
+   - For each keyframe:
+     - Frame number (display only)
+     - Title input
+     - Message textarea
+     - Toggle: "Add Button"
+     - If button enabled:
+       - Button text
+       - URL
+       - Target dropdown
+       - Theme selector (light/dark)
+
+4. **Styling Panel**
+   - Background color picker (from designtokens)
+   - Font family selector (from designtokens)
+   - Color scheme selector (from designtokens)
+   - Button theme preview
+
+5. **Preview Panel**
+   - Full-size 3D animation preview
+   - Functional prev/next buttons
+   - Shows current frame number
+   - Displays content overlays
+
+6. **Export Section**
+   - "Generate Embed Code" button
+   - Copy iframe code button
+   - Download JSON config button
+   - Import JSON button
+
+### 3.2 Embed Player (Output)
+
+**Layout:**
+- Fixed dimensions (e.g., 800x600px, configurable)
+- 3D canvas (full container)
+- Content overlay (positioned over canvas):
+  - Title
+  - Message
+  - Optional button
+- Navigation controls:
+  - Previous button (left)
+  - Next button (right)
+  - Disabled when at start/end
+- Loading state while 3D asset loads
+
+**Behavior:**
+- Clicking next/prev plays animation to next/previous keyframe
+- No zoom, rotate, or pan controls
+- Fully responsive (scales to container)
+
+## 4. Technical Requirements
+
+### 4.1 3D Rendering
+- Use React Three Fiber for declarative 3D
+- Use @react-three/drei for utilities (useGLTF, etc.)
+- Load GLB with THREE.GLTFLoader
+- Support pre-compressed textures (KTX2) and geometry (Draco)
+- Render at 60fps
+- Smooth frame transitions
+
+### 4.2 Animation Control
+- Programmatic control of animation timeline
+- Ability to seek to specific frames
+- Smooth interpolation between keyframes
+- Pause/play functionality
+- Current frame tracking
+
+### 4.3 State Management
+- Single configuration state
+- No user accounts or persistence (session-based)
+- Export/import as JSON for persistence
+
+### 4.4 Styling Integration
+- Import existing designtokens.ts
+- Use tokens for all colors, fonts, spacing
+- Support light/dark theme variants
+- Consistent with brand guidelines
+
+### 4.5 Hosting & Deployment
+- Host on GitHub Pages
+- Static site (no backend required)
+- Embed player must be accessible via public URL
+- CORS-enabled for cross-origin embeds
+
+### 4.6 Performance
+- Lazy load 3D assets
+- Show loading indicator during asset load
+- Optimize for web (compressed GLB format)
+- Target 60fps animation playback
+- Minimize bundle size
+
+## 5. User Workflows
+
+### 5.1 Create New Configuration
+1. User opens tool
+2. Uploads GLB or provides URL
+3. Sets total frames and keyframe interval
+4. User fills in title/message/button for each content keyframe
+5. User customizes styling
+6. User previews animation
+7. User generates embed code
+8. User copies iframe code and/or downloads JSON
+
+### 5.2 Edit Existing Configuration
+1. User opens tool
+2. User imports JSON config
+3. System loads all settings and 3D asset
+4. User makes changes
+5. User previews changes
+6. User exports updated config
+
+### 5.3 End-User Interaction (Embed)
+1. User visits website with embed
+2. Embed shows 3D model at frame 0
+3. User clicks "next" to advance
+4. Animation plays to next keyframe
+5. At end, "next" button is disabled
+
+## 6. Edge Cases & Validation
+
+### 6.1 Input Validation
+- Total frames must be > 0
+- Keyframe interval must be > 0
+- Keyframe interval must be < total frames
+- At least 2 content keyframes required
+- URL validation for 3D asset and button links
+- JSON structure validation on import
+
+### 6.2 Error Handling
+- Failed 3D asset load (show error message)
+- Invalid JSON import (show validation errors)
+- CORS errors for URL-based assets (show helpful message)
+- Missing required fields (prevent export)
+
+### 6.3 Browser Compatibility
+- Support modern browsers (Chrome, Firefox, Safari, Edge)
+- WebGL 2.0 required
+- Fallback message for unsupported browsers
+
+## 7. Future Considerations (Out of Scope for v1)
+- Multiple 3D assets per project
+- User accounts and cloud storage
+- Analytics integration
+- Custom loading screens
+- Audio support
+- Mobile-optimized embeds
+- A/B testing variants
+
+## 8. Success Metrics
+- Users can create and export working embeds in < 5 minutes
+- 3D animation plays smoothly at 60fps
+- Embeds work across all target websites
+- JSON export/import maintains 100% fidelity
+
+## 9. Deliverables
+1. React application (creator tool)
+2. Embed player component
+3. JSON schema documentation
+4. README with setup instructions
+5. Example GLB asset and configuration
+6. Deployment to GitHub Pages
+
+## 10. Design Tokens Structure Reference
+
+Ensure designtokens.ts includes:
+```typescript
+{
+  colors: {
+    primary: string,
+    secondary: string,
+    background: {
+      light: string,
+      dark: string
+    },
+    text: {
+      light: string,
+      dark: string
+    }
+  },
+  fonts: {
+    primary: string,
+    secondary: string
+  },
+  button: {
+    light: {...},
+    dark: {...}
+  }
+}
+```
+
+---
+
+## Implementation Notes for Claude Code
+
+1. Start with basic React Three Fiber setup
+2. Implement GLB loading and playback controls
+3. Build configuration UI with designtokens integration
+4. Add content overlay system
+5. Implement JSON export/import
+6. Create embed player as separate route/component
+7. Generate iframe embed code with query params
+8. Add preview functionality
+9. Polish UI and add validation
+10. Deploy to GitHub Pages
+
+**Priority Order:**
+1. 3D rendering + animation control (core functionality)
+2. Configuration UI (frame setup + content editor)
+3. Preview system
+4. Export/import (JSON + iframe)
+5. Styling integration
+6. Error handling + validation
+7. Deployment setup

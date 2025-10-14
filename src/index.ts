@@ -4,6 +4,7 @@ export * as contentStack from './snippets/contentStack';
 export * as tickertape from './snippets/tickertape';
 export * as waveGen from './snippets/waveGen';
 export * as glowingBento from './snippets/glowingBento';
+export * as productCard3D from './snippets/3dProductCard';
 
 // Also export components at the root level for backward compatibility
 export { GradientText } from './snippets/gradientTypography/components/GradientText';
@@ -16,3 +17,5 @@ export { WaveGen } from './snippets/waveGen/components/WaveGen';
 export type { WaveGenProps } from './snippets/waveGen/components/WaveGen';
 export { GlowingBento } from './snippets/glowingBento/components/GlowingBento';
 export type { GlowingBentoProps, BentoTile } from './snippets/glowingBento/components/GlowingBento';
+export { ProductCard3D } from './snippets/3dProductCard/components/ProductCard3D';
+export type { ProductCard3DProps } from './snippets/3dProductCard/components/ProductCard3D';
