@@ -38,20 +38,31 @@ function getCameraValue<T>(
 
 /**
  * Hook that returns responsive camera position and target
+ * @param camera - Camera configuration
+ * @param forceMobile - Optional override for mobile detection (for iframe embeds)
  */
-export const useResponsiveCamera = (camera?: CameraConfig) => {
+export const useResponsiveCamera = (camera?: CameraConfig, forceMobile?: boolean) => {
   const [isMobile, setIsMobile] = useState(
-    () => typeof window !== 'undefined' && window.innerWidth < MOBILE_BREAKPOINT
+    () => {
+      if (forceMobile !== undefined) return forceMobile;
+      return typeof window !== 'undefined' && window.innerWidth < MOBILE_BREAKPOINT;
+    }
   );
 
   useEffect(() => {
+    // If forceMobile is provided, use that instead of window resize
+    if (forceMobile !== undefined) {
+      setIsMobile(forceMobile);
+      return;
+    }
+
     const handleResize = () => {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [forceMobile]);
 
   const position = getCameraValue(
     camera?.position,

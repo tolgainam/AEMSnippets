@@ -30,8 +30,8 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({
   // Apply design tokens to styles with responsive typography
   const mergedStyle = useDesignTokens(style, isMobileSize);
 
-  // Get responsive camera position/target
-  const responsiveCamera = useResponsiveCamera(camera);
+  // Get responsive camera position/target (pass isMobileSize for iframe embeds)
+  const responsiveCamera = useResponsiveCamera(camera, isMobileSize);
 
   // Get current keyframe
   const currentKeyframe: Keyframe | null = keyframes[currentKeyframeIndex] || null;
