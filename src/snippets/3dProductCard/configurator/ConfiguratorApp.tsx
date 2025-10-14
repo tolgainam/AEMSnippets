@@ -271,6 +271,48 @@ export const ConfiguratorApp: React.FC = () => {
     alert('Embed code copied to clipboard!');
   };
 
+  const generateAEMKeyValues = () => {
+    // Generate AEM-friendly Key/Value pairs
+    const lines: string[] = [];
+
+    lines.push('=== AEM iframe Component Configuration ===\n');
+    lines.push('Base URL:');
+    lines.push('https://tolgainam.github.io/AEMSnippets/3dProductCard/embed.html\n');
+    lines.push('Key/Value Pairs:');
+    lines.push(`modelPath = ${config.modelPath}`);
+
+    if (config.style?.brand) {
+      lines.push(`brand = ${config.style.brand}`);
+    }
+    if (config.style?.theme) {
+      lines.push(`theme = ${config.style.theme}`);
+    }
+    if (config.style?.overlayPosition) {
+      lines.push(`overlayPosition = ${config.style.overlayPosition}`);
+    }
+    if (config.style?.titleTypography) {
+      lines.push(`titleTypography = ${config.style.titleTypography}`);
+    }
+    if (config.style?.messageTypography) {
+      lines.push(`messageTypography = ${config.style.messageTypography}`);
+    }
+    if (config.animation?.totalFrames) {
+      lines.push(`animationFrames = ${config.animation.totalFrames}`);
+    }
+    if (config.animation?.fps) {
+      lines.push(`animationFps = ${config.animation.fps}`);
+    }
+
+    // Add keyframes as JSON strings
+    config.keyframes.forEach((kf, i) => {
+      lines.push(`keyframe${i} = ${JSON.stringify(kf)}`);
+    });
+
+    const output = lines.join('\n');
+    navigator.clipboard.writeText(output);
+    alert('AEM Key/Value pairs copied to clipboard!');
+  };
+
   const selectedKeyframe = config.keyframes[selectedKeyframeIndex];
 
   return (
@@ -312,6 +354,9 @@ export const ConfiguratorApp: React.FC = () => {
           </label>
           <button className="btn btn-secondary" onClick={exportConfig}>
             Export Config
+          </button>
+          <button className="btn btn-primary" onClick={generateAEMKeyValues}>
+            Copy AEM Key/Values
           </button>
           <button className="btn btn-primary" onClick={generateEmbedCode}>
             Generate Embed Code
