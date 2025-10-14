@@ -14,12 +14,21 @@ const EmbedApp: React.FC = () => {
       const configParam = params.get('config');
 
       if (!configParam) {
-        setError('No configuration provided. Please add ?config=<encoded-json> to the URL.');
+        setError('No configuration provided. Please add ?config=<base64-encoded-json> to the URL.');
         return;
       }
 
-      // Parse the configuration (URLSearchParams already decodes it)
-      const parsedConfig: ProductCard3DConfig = JSON.parse(configParam);
+      // Decode from Base64 and parse the configuration
+      let jsonString: string;
+      try {
+        // Try Base64 decoding first (new format)
+        jsonString = atob(configParam);
+      } catch {
+        // Fallback to direct JSON parsing for backward compatibility (old format)
+        jsonString = configParam;
+      }
+
+      const parsedConfig: ProductCard3DConfig = JSON.parse(jsonString);
 
       // Validate required fields
       if (!parsedConfig.modelPath) {
@@ -52,12 +61,13 @@ const EmbedApp: React.FC = () => {
           <details>
             <summary>How to use this embed</summary>
             <p>
-              Add a <code>config</code> parameter to the URL with a URL-encoded JSON configuration.
+              Add a <code>config</code> parameter to the URL with a Base64-encoded JSON configuration.
             </p>
             <p>Example:</p>
             <pre>
-              ?config=%7B%22modelPath%22%3A%22...%22%2C%22animation%22%3A%7B...%7D%7D
+              ?config=eyJtb2RlbFBhdGgiOiIuLi4iLCJhbmltYXRpb24iOnsuLi59fQ==
             </pre>
+            <p>Use the configurator's "Generate Embed Code" button to create the correct URL automatically.</p>
           </details>
         </div>
       </div>
