@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { ProductCard3D } from '../components/ProductCard3D';
 import type { ProductCard3DConfig, Keyframe } from '../types/config';
 import './ConfiguratorApp.css';
+import sampleModel from '../assets/sample3d.glb?url';
 
 const DEFAULT_CONFIG: ProductCard3DConfig = {
-  modelPath: '/AEMSnippets/src/snippets/3dProductCard/assets/sample3d.glb',
+  modelPath: sampleModel,
   animation: {
     totalFrames: 360,
     fps: 30
