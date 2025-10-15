@@ -126,12 +126,29 @@ const Scene3DComponent: React.FC<Scene3DProps> = ({
     };
   }, [scene, animations, onLoad]);
 
-  // Set camera position and rotation
-  // Only update when OrbitControls is disabled, otherwise it will fight with user's manual control
+  // Set camera position and rotation on mount only
+  const hasMountedCamera = useRef(false);
   useEffect(() => {
+    // Initialize camera position and target once on mount
+    if (!hasMountedCamera.current) {
+      if (camera?.position) {
+        threeCamera.position.set(...camera.position);
+      }
+      if (camera?.target) {
+        threeCamera.lookAt(new THREE.Vector3(...camera.target));
+      }
+      if (camera?.rotation) {
+        threeCamera.rotation.x = camera.rotation[0];
+        threeCamera.rotation.y = camera.rotation[1];
+        threeCamera.rotation.z = camera.rotation[2];
+      }
+      hasMountedCamera.current = true;
+      return;
+    }
+
+    // After mount: Only update when OrbitControls is disabled
+    // Otherwise it will fight with user's manual control
     if (enableOrbitControls) {
-      // When OrbitControls is enabled, only set camera on mount (initial setup)
-      // Don't update continuously as that would override user's OrbitControls adjustments
       return;
     }
 
