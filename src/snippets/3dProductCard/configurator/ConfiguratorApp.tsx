@@ -609,8 +609,6 @@ export const ConfiguratorApp: React.FC = () => {
       };
     } else {
       // currentZoom is undefined - check if there's already a breakpoint value we should preserve
-      const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
-
       // If the keyframe already has a breakpoint-specific zoom from a previous action, preserve it
       if (keyframe.camera?.zoom && typeof keyframe.camera.zoom === 'object' && !Array.isArray(keyframe.camera.zoom)) {
         updatedZoom = {
