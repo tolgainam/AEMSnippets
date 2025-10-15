@@ -29,7 +29,7 @@ export const ContentOverlay: React.FC<ContentOverlayProps> = ({
   const overlayClassName = `content-overlay content-overlay--${style.overlayPosition || 'right'}`;
 
   const overlayStyle: React.CSSProperties = {
-    background: style.overlayBackground || 'rgba(0, 0, 0, 0.7)',
+    background: style.overlayBackground !== undefined ? style.overlayBackground : 'rgba(0, 0, 0, 0.7)',
   };
 
   const titleStyle: React.CSSProperties = {

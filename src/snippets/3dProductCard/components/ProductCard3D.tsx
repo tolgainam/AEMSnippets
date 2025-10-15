@@ -145,7 +145,7 @@ export const ProductCard3D = forwardRef<ProductCard3DHandle, ProductCard3DProps>
   const containerStyle: React.CSSProperties = {
     width: typeof width === 'number' ? `${width}px` : width,
     height: typeof height === 'number' ? `${height}px` : height,
-    background: mergedStyle.background || '#1a1a1a',
+    background: mergedStyle.background !== undefined ? mergedStyle.background : '#1a1a1a',
   };
 
   // Memoize handleLoad to prevent re-renders
