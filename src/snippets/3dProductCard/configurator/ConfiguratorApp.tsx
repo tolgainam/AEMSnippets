@@ -579,7 +579,15 @@ export const ConfiguratorApp: React.FC = () => {
   };
 
   const exportConfig = () => {
-    const json = JSON.stringify(config, null, 2);
+    // Replace dev path with production-ready placeholder
+    const exportableConfig = {
+      ...config,
+      modelPath: config.modelPath.includes('/assets/')
+        ? 'https://your-cdn.com/path/to/model.glb'
+        : config.modelPath
+    };
+
+    const json = JSON.stringify(exportableConfig, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -606,8 +614,16 @@ export const ConfiguratorApp: React.FC = () => {
   };
 
   const generateEmbedCode = () => {
+    // Replace dev path with production-ready placeholder
+    const exportableConfig = {
+      ...config,
+      modelPath: config.modelPath.includes('/assets/')
+        ? 'https://your-cdn.com/path/to/model.glb'
+        : config.modelPath
+    };
+
     // Use Base64 encoding for more compact URLs
-    const jsonString = JSON.stringify(config);
+    const jsonString = JSON.stringify(exportableConfig);
     const base64Config = btoa(jsonString);
     const embedUrl = `https://tolgainam.github.io/AEMSnippets/3dProductCard/embed.html?config=${base64Config}`;
     const iframeCode = `<iframe src="${embedUrl}" width="100%" height="600" frameborder="0"></iframe>`;
@@ -628,7 +644,14 @@ export const ConfiguratorApp: React.FC = () => {
     lines.push('Base URL:');
     lines.push('https://tolgainam.github.io/AEMSnippets/3dProductCard/embed.html\n');
     lines.push('Key/Value Pairs:');
-    lines.push(`modelPath = ${config.modelPath}`);
+
+    // Provide a clean modelPath example for AEM
+    const productionModelPath = 'https://your-cdn.com/path/to/model.glb';
+    lines.push(`modelPath = ${productionModelPath}`);
+    lines.push('');
+    lines.push('⚠️  IMPORTANT: Upload your .glb model to your CDN/DAM');
+    lines.push('   and replace the modelPath above with the actual URL.');
+    lines.push(`   Current model: ${config.modelPath.split('/').pop()}`);
 
     if (config.style?.brand) {
       lines.push(`brand = ${config.style.brand}`);
