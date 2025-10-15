@@ -24,8 +24,14 @@ export interface Keyframe {
       mobile?: [number, number, number];
       desktop?: [number, number, number];
     };
-    fov?: number;
-    zoom?: number;
+    fov?: number | {
+      mobile?: number;
+      desktop?: number;
+    };
+    zoom?: number | {
+      mobile?: number;
+      desktop?: number;
+    };
     rotation?: [number, number, number]; // Euler angles in radians [x, y, z]
   };
 }
@@ -43,8 +49,16 @@ export interface CameraConfig {
     mobile?: [number, number, number];
     desktop?: [number, number, number];
   };
-  /** Camera field of view */
-  fov?: number;
+  /** Camera field of view - single value or responsive breakpoints */
+  fov?: number | {
+    mobile?: number;
+    desktop?: number;
+  };
+  /** Camera zoom multiplier - single value or responsive breakpoints */
+  zoom?: number | {
+    mobile?: number;
+    desktop?: number;
+  };
   /** Camera target/look-at point [x, y, z] - single target or responsive breakpoints */
   target?: [number, number, number] | {
     mobile?: [number, number, number];
@@ -117,4 +131,6 @@ export interface ProductCard3DProps {
   onAnimationChange?: (currentKeyframe: number, isPlaying: boolean) => void;
   /** Callback when button is clicked */
   onButtonClick?: (url: string) => void;
+  /** Enable orbit controls for manual camera adjustment */
+  enableOrbitControls?: boolean;
 }

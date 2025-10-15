@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Scene3D } from './Scene3D';
 import { ContentOverlay } from './ContentOverlay';
@@ -9,46 +9,39 @@ import { useResponsiveCamera } from '../hooks/useResponsiveCamera';
 import { interpolateCamera } from '../utils/easing';
 import './ProductCard3D.css';
 
-export const ProductCard3D: React.FC<ProductCard3DProps> = ({
+export interface ProductCard3DHandle {
+  captureCamera: () => {
+    position: [number, number, number];
+    target: [number, number, number];
+    fov: number;
+    zoom: number;
+  } | null;
+  jumpToKeyframe: (index: number) => void;
+}
+
+export const ProductCard3D = forwardRef<ProductCard3DHandle, ProductCard3DProps>(({
   config,
   width = '100%',
   height = '600px',
   onAnimationChange,
-  onButtonClick
-}) => {
+  onButtonClick,
+  enableOrbitControls = false
+}, ref) => {
   const [currentKeyframeIndex, setCurrentKeyframeIndex] = useState(0);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Destructure config early so we can use these in hooks
   const { animation, keyframes, modelPath, camera, style } = config;
 
-  // Determine if mobile based on width
-  const widthNum = typeof width === 'number' ? width : parseInt(width as string) || 0;
-  const isMobileSize = widthNum <= 768;
-
-  // Apply design tokens to styles with responsive typography
-  const mergedStyle = useDesignTokens(style, isMobileSize);
-
-  // Get responsive camera position/target (pass isMobileSize for iframe embeds)
-  const responsiveCamera = useResponsiveCamera(camera, isMobileSize);
-
-  // Get current keyframe
-  const currentKeyframe: Keyframe | null = keyframes[currentKeyframeIndex] || null;
-
-  // Initialize to first keyframe on mount
-  useEffect(() => {
-    if (keyframes.length > 0 && currentFrame === 0) {
-      setCurrentFrame(keyframes[0].frame);
-    }
-  }, []);  // Only run once on mount
-
-  // Notify parent of animation changes
-  useEffect(() => {
-    if (onAnimationChange) {
-      onAnimationChange(currentKeyframeIndex, isPlaying);
-    }
-  }, [currentKeyframeIndex, isPlaying, onAnimationChange]);
+  // Ref to store camera capture function from Scene3D
+  const cameraCaptureRef = useRef<(() => {
+    position: [number, number, number];
+    target: [number, number, number];
+    fov: number;
+    zoom: number;
+  } | null) | null>(null);
 
   // Animate to a specific frame
   const animateToFrame = useCallback((targetFrame: number, onComplete?: () => void) => {
@@ -76,6 +69,50 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({
 
     requestAnimationFrame(animate);
   }, [currentFrame, animation.fps]);
+
+  // Expose methods to parent
+  useImperativeHandle(ref, () => ({
+    captureCamera: () => {
+      if (cameraCaptureRef.current) {
+        return cameraCaptureRef.current();
+      }
+      return null;
+    },
+    jumpToKeyframe: (index: number) => {
+      console.log('[ProductCard3D] jumpToKeyframe called with index:', index);
+      if (index >= 0 && index < keyframes.length) {
+        setCurrentKeyframeIndex(index);
+        animateToFrame(keyframes[index].frame);
+      }
+    }
+  }), [keyframes, animateToFrame]);
+
+  // Determine if mobile based on width
+  const widthNum = typeof width === 'number' ? width : parseInt(width as string) || 0;
+  const isMobileSize = widthNum <= 768;
+
+  // Apply design tokens to styles with responsive typography
+  const mergedStyle = useDesignTokens(style, isMobileSize);
+
+  // Get responsive camera position/target (pass isMobileSize for iframe embeds)
+  const responsiveCamera = useResponsiveCamera(camera, isMobileSize);
+
+  // Get current keyframe
+  const currentKeyframe: Keyframe | null = keyframes[currentKeyframeIndex] || null;
+
+  // Initialize to first keyframe on mount
+  useEffect(() => {
+    if (keyframes.length > 0 && currentFrame === 0) {
+      setCurrentFrame(keyframes[0].frame);
+    }
+  }, []);  // Only run once on mount
+
+  // Notify parent of animation changes
+  useEffect(() => {
+    if (onAnimationChange) {
+      onAnimationChange(currentKeyframeIndex, isPlaying);
+    }
+  }, [currentKeyframeIndex, isPlaying, onAnimationChange]);
 
   // Navigate to previous keyframe
   const handlePrevious = useCallback(() => {
@@ -116,13 +153,17 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({
     setIsLoaded(true);
   }, []);
 
-  // Helper to resolve responsive camera values
+  // Helper to resolve responsive camera values (including primitives like number)
   const resolveResponsiveValue = <T,>(value: T | { mobile?: T; desktop?: T } | undefined, fallback: T): T => {
-    if (!value) return fallback;
-    if (Array.isArray(value)) return value;
-    if (typeof value === 'object' && ('mobile' in value || 'desktop' in value)) {
-      return (isMobileSize ? value.mobile : value.desktop) || fallback;
+    if (value === undefined) return fallback;
+    if (typeof value === 'number') return value as T;
+    if (Array.isArray(value)) return value as T;
+    if (typeof value === 'object' && value !== null && ('mobile' in value || 'desktop' in value)) {
+      const resolved = (isMobileSize ? (value as any).mobile : (value as any).desktop);
+      return resolved !== undefined ? resolved : fallback;
     }
+    // If it's a primitive value (number, string, etc), return it directly
+    if (value !== null && value !== undefined) return value as T;
     return fallback;
   };
 
@@ -130,12 +171,14 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({
   const getKeyframeCamera = useCallback((kf: Keyframe | null) => {
     const kfPosition = kf?.camera?.position;
     const kfTarget = kf?.camera?.target;
+    const kfFov = kf?.camera?.fov;
+    const kfZoom = kf?.camera?.zoom;
 
     return {
       position: resolveResponsiveValue(kfPosition, responsiveCamera.position),
       target: resolveResponsiveValue(kfTarget, responsiveCamera.target),
-      fov: kf?.camera?.fov ?? responsiveCamera.fov,
-      zoom: kf?.camera?.zoom ?? 1,
+      fov: resolveResponsiveValue(kfFov, responsiveCamera.fov),
+      zoom: resolveResponsiveValue(kfZoom, 1),
       rotation: kf?.camera?.rotation || [0, 0, 0] as [number, number, number],
     };
   }, [responsiveCamera, isMobileSize]);
@@ -192,8 +235,10 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({
       totalFrames={animation.totalFrames}
       camera={effectiveCamera}
       onLoad={handleLoad}
+      enableOrbitControls={enableOrbitControls}
+      cameraCaptureRef={cameraCaptureRef}
     />
-  ), [modelPath, currentFrame, animation.totalFrames, effectiveCamera, handleLoad]);
+  ), [modelPath, currentFrame, animation.totalFrames, effectiveCamera, handleLoad, enableOrbitControls]);
 
   return (
     <div className={`product-card-3d ${isMobileSize ? 'product-card-3d--mobile' : ''}`} style={containerStyle}>
@@ -234,6 +279,8 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({
       )}
     </div>
   );
-};
+});
+
+ProductCard3D.displayName = 'ProductCard3D';
 
 export type { ProductCard3DProps };

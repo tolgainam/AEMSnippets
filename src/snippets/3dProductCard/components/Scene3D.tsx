@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, PerspectiveCamera } from '@react-three/drei';
+import { useGLTF, PerspectiveCamera, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface Scene3DProps {
@@ -15,6 +15,13 @@ interface Scene3DProps {
     rotation?: [number, number, number];
   };
   onLoad?: () => void;
+  enableOrbitControls?: boolean;
+  cameraCaptureRef?: React.MutableRefObject<(() => {
+    position: [number, number, number];
+    target: [number, number, number];
+    fov: number;
+    zoom: number;
+  } | null) | null>;
 }
 
 const Scene3DComponent: React.FC<Scene3DProps> = ({
@@ -22,7 +29,9 @@ const Scene3DComponent: React.FC<Scene3DProps> = ({
   currentFrame,
   totalFrames,
   camera,
-  onLoad
+  onLoad,
+  enableOrbitControls = false,
+  cameraCaptureRef
 }) => {
   const group = useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF(modelPath);
@@ -30,6 +39,45 @@ const Scene3DComponent: React.FC<Scene3DProps> = ({
   const action = useRef<THREE.AnimationAction | null>(null);
   const [hasAnimations, setHasAnimations] = useState(false);
   const { camera: threeCamera } = useThree();
+  const orbitControlsRef = useRef<any>(null);
+
+  // Populate camera capture function for parent components
+  useEffect(() => {
+    if (cameraCaptureRef) {
+      cameraCaptureRef.current = () => {
+        console.log('[Scene3D] Capture camera called');
+        console.log('[Scene3D] threeCamera:', threeCamera);
+        console.log('[Scene3D] orbitControlsRef.current:', orbitControlsRef.current);
+
+        if (!threeCamera) {
+          console.log('[Scene3D] No threeCamera, returning null');
+          return null;
+        }
+
+        const pos = threeCamera.position;
+        const position: [number, number, number] = [pos.x, pos.y, pos.z];
+        console.log('[Scene3D] Camera position:', position);
+
+        // Get target from OrbitControls if available, otherwise use lookAt direction
+        let target: [number, number, number] = [0, 0, 0];
+        if (orbitControlsRef.current?.target) {
+          const tgt = orbitControlsRef.current.target;
+          target = [tgt.x, tgt.y, tgt.z];
+          console.log('[Scene3D] OrbitControls target:', target);
+        } else {
+          console.log('[Scene3D] No OrbitControls target, using default [0,0,0]');
+        }
+
+        const fov = (threeCamera as any).fov || 50;
+        const zoom = (threeCamera as any).zoom || 1;
+        console.log('[Scene3D] FOV:', fov, 'Zoom:', zoom);
+
+        const result = { position, target, fov, zoom };
+        console.log('[Scene3D] Returning captured camera:', result);
+        return result;
+      };
+    }
+  }, [threeCamera, cameraCaptureRef]);
 
   // Initialize animation mixer
   useEffect(() => {
@@ -66,20 +114,28 @@ const Scene3DComponent: React.FC<Scene3DProps> = ({
   }, [scene, animations, onLoad]);
 
   // Set camera position and rotation
+  // Only update when OrbitControls is disabled, otherwise it will fight with user's manual control
   useEffect(() => {
+    if (enableOrbitControls) {
+      // When OrbitControls is enabled, only set camera on mount (initial setup)
+      // Don't update continuously as that would override user's OrbitControls adjustments
+      return;
+    }
+
+    // When OrbitControls is disabled, update camera from props
     if (camera?.position) {
       threeCamera.position.set(...camera.position);
     }
     if (camera?.target) {
       threeCamera.lookAt(new THREE.Vector3(...camera.target));
     }
-    // Apply additional rotation after lookAt (adds to the lookAt rotation)
+    // Apply additional rotation after lookAt (sets the rotation, not adds)
     if (camera?.rotation) {
-      threeCamera.rotation.x += camera.rotation[0];
-      threeCamera.rotation.y += camera.rotation[1];
-      threeCamera.rotation.z += camera.rotation[2];
+      threeCamera.rotation.x = camera.rotation[0];
+      threeCamera.rotation.y = camera.rotation[1];
+      threeCamera.rotation.z = camera.rotation[2];
     }
-  }, [camera, threeCamera]);
+  }, [camera, threeCamera, enableOrbitControls]);
 
   // Update animation frame
   useEffect(() => {
@@ -146,7 +202,7 @@ const Scene3DComponent: React.FC<Scene3DProps> = ({
       {/* Main key light - soft from top-right */}
       <directionalLight
         position={[5, 8, 5]}
-        intensity={0.4}
+        intensity={0.3}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -169,7 +225,7 @@ const Scene3DComponent: React.FC<Scene3DProps> = ({
       {/* Rim/back light for depth */}
       <directionalLight
         position={[0, 2, -5]}
-        intensity={0.25}
+        intensity={0.5}
         color="#fff5e6"
       />
 
@@ -190,10 +246,20 @@ const Scene3DComponent: React.FC<Scene3DProps> = ({
         receiveShadow
       >
         <planeGeometry args={[20, 20]} />
-        <shadowMaterial opacity={0.08} />
+        <shadowMaterial opacity={0.1} />
       </mesh>
 
       <primitive ref={group} object={scene} />
+
+      {/* OrbitControls for manual camera adjustment in configurator */}
+      {enableOrbitControls && (
+        <OrbitControls
+          ref={orbitControlsRef}
+          target={camera?.target || [0, 0, 0]}
+          enableDamping
+          dampingFactor={0.05}
+        />
+      )}
     </>
   );
 };

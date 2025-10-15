@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { ProductCard3D } from '../components/ProductCard3D';
+import React, { useState, useRef, useEffect } from 'react';
+import { ProductCard3D, ProductCard3DHandle } from '../components/ProductCard3D';
 import type { ProductCard3DConfig, Keyframe } from '../types/config';
 import './ConfiguratorApp.css';
-import sampleModel from '../assets/sample3d.glb?url';
+import sampleModel from '../assets/eagle.glb?url';
 
 const DEFAULT_CONFIG: ProductCard3DConfig = {
   modelPath: sampleModel,
@@ -69,6 +69,110 @@ export const ConfiguratorApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'model' | 'animation' | 'keyframes' | 'style' | 'usage'>('usage');
   const [selectedKeyframeIndex, setSelectedKeyframeIndex] = useState(0);
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
+  const productCard3DRef = useRef<ProductCard3DHandle>(null);
+
+  // Capture current camera view and apply to config
+  const handleCaptureCurrentView = () => {
+    console.log('[ConfiguratorApp] Capture Current View clicked');
+    console.log('[ConfiguratorApp] productCard3DRef.current:', productCard3DRef.current);
+    console.log('[ConfiguratorApp] activeTab:', activeTab);
+    console.log('[ConfiguratorApp] previewMode:', previewMode);
+
+    if (!productCard3DRef.current) {
+      console.log('[ConfiguratorApp] No productCard3DRef, returning');
+      return;
+    }
+
+    const captured = productCard3DRef.current.captureCamera();
+    console.log('[ConfiguratorApp] Captured camera:', captured);
+
+    if (!captured) {
+      console.log('[ConfiguratorApp] No captured data, returning');
+      return;
+    }
+
+    const { position, target, fov, zoom } = captured;
+
+    // Apply to base camera or keyframe camera depending on active tab
+    if (activeTab === 'model') {
+      console.log('[ConfiguratorApp] Applying to base camera');
+
+      // Batch all updates into single state update
+      setConfig(prev => {
+        const currentPos = prev.camera?.position;
+        const currentTarget = prev.camera?.target;
+        const currentFov = prev.camera?.fov;
+        const currentZoom = prev.camera?.zoom;
+
+        const makeBreakpointSpecific = (current: any, newValue: any, fallback: any) => {
+          if (typeof current === 'object' && !Array.isArray(current)) {
+            return { ...current, [previewMode]: newValue };
+          } else {
+            return {
+              mobile: previewMode === 'mobile' ? newValue : (Array.isArray(current) || typeof current === 'number' ? current : fallback),
+              desktop: previewMode === 'desktop' ? newValue : (Array.isArray(current) || typeof current === 'number' ? current : fallback)
+            };
+          }
+        };
+
+        const updatedCamera = {
+          position: makeBreakpointSpecific(currentPos, position, [0, 0, 5]),
+          target: makeBreakpointSpecific(currentTarget, target, [0, 0, 0]),
+          fov: makeBreakpointSpecific(currentFov, fov, 50),
+          zoom: makeBreakpointSpecific(currentZoom, zoom, 1)
+        };
+
+        console.log('[ConfiguratorApp] Updating base camera to:', updatedCamera);
+        return { ...prev, camera: updatedCamera };
+      });
+
+      console.log('[ConfiguratorApp] Base camera updated');
+    } else if (activeTab === 'keyframes' && selectedKeyframe) {
+      console.log('[ConfiguratorApp] Applying to keyframe', selectedKeyframeIndex);
+
+      // Batch all keyframe camera updates into single state update
+      setConfig(prev => {
+        const keyframe = prev.keyframes[selectedKeyframeIndex];
+        const currentPos = keyframe.camera?.position;
+        const currentTarget = keyframe.camera?.target;
+        const currentFov = keyframe.camera?.fov;
+        const currentZoom = keyframe.camera?.zoom;
+
+        const makeBreakpointSpecific = (current: any, newValue: any) => {
+          if (typeof current === 'object' && !Array.isArray(current)) {
+            return { ...current, [previewMode]: newValue };
+          } else if (Array.isArray(current) || typeof current === 'number') {
+            // Convert from simple value to breakpoint-specific
+            const otherValue = current;
+            return {
+              mobile: previewMode === 'mobile' ? newValue : otherValue,
+              desktop: previewMode === 'desktop' ? newValue : otherValue,
+            };
+          } else {
+            return { [previewMode]: newValue };
+          }
+        };
+
+        const updatedCamera = {
+          ...keyframe.camera,
+          position: makeBreakpointSpecific(currentPos, position),
+          target: makeBreakpointSpecific(currentTarget, target),
+          fov: makeBreakpointSpecific(currentFov, fov),
+          zoom: makeBreakpointSpecific(currentZoom, zoom),
+        };
+
+        console.log('[ConfiguratorApp] Updating keyframe camera to:', updatedCamera);
+
+        const updatedKeyframes = prev.keyframes.map((kf, i) =>
+          i === selectedKeyframeIndex ? { ...kf, camera: updatedCamera } : kf
+        );
+
+        return { ...prev, keyframes: updatedKeyframes };
+      });
+
+      console.log('[ConfiguratorApp] Keyframe camera updated');
+    }
+  };
 
   const updateConfig = (updates: Partial<ProductCard3DConfig>) => {
     setConfig(prev => ({ ...prev, ...updates }));
@@ -127,7 +231,7 @@ export const ConfiguratorApp: React.FC = () => {
     const pos = config.camera?.position;
     if (!pos) return [0, 0, 5];
     if (Array.isArray(pos)) return pos;
-    return [0, 0, 5];
+    return pos[previewMode] || [0, 0, 5];
   };
 
   // Helper to get camera target
@@ -135,22 +239,124 @@ export const ConfiguratorApp: React.FC = () => {
     const target = config.camera?.target;
     if (!target) return [0, 0, 0];
     if (Array.isArray(target)) return target;
-    return [0, 0, 0];
+    return target[previewMode] || [0, 0, 0];
+  };
+
+  // Helper to get camera FOV
+  const getCameraFov = (): number => {
+    const fov = config.camera?.fov;
+    if (!fov) return 50;
+    if (typeof fov === 'number') return fov;
+    return fov[previewMode] || 50;
+  };
+
+  // Helper to get camera zoom
+  const getCameraZoom = (): number => {
+    const zoom = config.camera?.zoom;
+    if (!zoom) return 1;
+    if (typeof zoom === 'number') return zoom;
+    return zoom[previewMode] || 1;
   };
 
   // Helper to set camera position
   const setCameraPosition = (newPos: [number, number, number]) => {
+    console.log('[ConfiguratorApp] setCameraPosition called with:', newPos, 'previewMode:', previewMode);
+    const currentPos = config.camera?.position;
+
+    let updatedPosition: any;
+    if (typeof currentPos === 'object' && !Array.isArray(currentPos)) {
+      // Already breakpoint-specific, update current breakpoint
+      updatedPosition = {
+        ...currentPos,
+        [previewMode]: newPos
+      };
+    } else {
+      // Convert to breakpoint-specific
+      updatedPosition = {
+        mobile: previewMode === 'mobile' ? newPos : (Array.isArray(currentPos) ? currentPos : [0, 0, 5]),
+        desktop: previewMode === 'desktop' ? newPos : (Array.isArray(currentPos) ? currentPos : [0, 0, 5])
+      };
+    }
+
+    console.log('[ConfiguratorApp] Setting camera position to:', updatedPosition);
     setConfig(prev => ({
       ...prev,
-      camera: { ...prev.camera!, position: newPos }
+      camera: { ...prev.camera!, position: updatedPosition }
     }));
   };
 
   // Helper to set camera target
   const setCameraTarget = (newTarget: [number, number, number]) => {
+    const currentTarget = config.camera?.target;
+
+    let updatedTarget: any;
+    if (typeof currentTarget === 'object' && !Array.isArray(currentTarget)) {
+      // Already breakpoint-specific, update current breakpoint
+      updatedTarget = {
+        ...currentTarget,
+        [previewMode]: newTarget
+      };
+    } else {
+      // Convert to breakpoint-specific
+      updatedTarget = {
+        mobile: previewMode === 'mobile' ? newTarget : (Array.isArray(currentTarget) ? currentTarget : [0, 0, 0]),
+        desktop: previewMode === 'desktop' ? newTarget : (Array.isArray(currentTarget) ? currentTarget : [0, 0, 0])
+      };
+    }
+
     setConfig(prev => ({
       ...prev,
-      camera: { ...prev.camera!, target: newTarget }
+      camera: { ...prev.camera!, target: updatedTarget }
+    }));
+  };
+
+  // Helper to set camera FOV
+  const setCameraFov = (newFov: number) => {
+    const currentFov = config.camera?.fov;
+
+    let updatedFov: any;
+    if (typeof currentFov === 'object') {
+      // Already breakpoint-specific, update current breakpoint
+      updatedFov = {
+        ...currentFov,
+        [previewMode]: newFov
+      };
+    } else {
+      // Convert to breakpoint-specific
+      updatedFov = {
+        mobile: previewMode === 'mobile' ? newFov : (currentFov || 50),
+        desktop: previewMode === 'desktop' ? newFov : (currentFov || 50)
+      };
+    }
+
+    setConfig(prev => ({
+      ...prev,
+      camera: { ...prev.camera!, fov: updatedFov }
+    }));
+  };
+
+  // Helper to set camera zoom
+  const setCameraZoom = (newZoom: number) => {
+    const currentZoom = config.camera?.zoom;
+
+    let updatedZoom: any;
+    if (typeof currentZoom === 'object') {
+      // Already breakpoint-specific, update current breakpoint
+      updatedZoom = {
+        ...currentZoom,
+        [previewMode]: newZoom
+      };
+    } else {
+      // Convert to breakpoint-specific
+      updatedZoom = {
+        mobile: previewMode === 'mobile' ? newZoom : (currentZoom || 1),
+        desktop: previewMode === 'desktop' ? newZoom : (currentZoom || 1)
+      };
+    }
+
+    setConfig(prev => ({
+      ...prev,
+      camera: { ...prev.camera!, zoom: updatedZoom }
     }));
   };
 
@@ -169,7 +375,22 @@ export const ConfiguratorApp: React.FC = () => {
     return target[previewMode];
   };
 
+  const getKeyframeCameraFov = (keyframe: Keyframe): number | undefined => {
+    const fov = keyframe.camera?.fov;
+    if (!fov) return undefined;
+    if (typeof fov === 'number') return fov;
+    return fov[previewMode];
+  };
+
+  const getKeyframeCameraZoom = (keyframe: Keyframe): number | undefined => {
+    const zoom = keyframe.camera?.zoom;
+    if (!zoom) return undefined;
+    if (typeof zoom === 'number') return zoom;
+    return zoom[previewMode];
+  };
+
   const setKeyframeCameraPosition = (index: number, newPos: [number, number, number] | undefined) => {
+    console.log('[ConfiguratorApp] setKeyframeCameraPosition called with index:', index, 'newPos:', newPos, 'previewMode:', previewMode);
     const keyframe = config.keyframes[index];
     const currentPos = keyframe.camera?.position;
 
@@ -178,9 +399,24 @@ export const ConfiguratorApp: React.FC = () => {
     if (newPos === undefined) {
       updatedPosition = undefined;
     } else if (Array.isArray(currentPos)) {
+      // When converting from simple array to breakpoint object,
+      // we need to get the RESOLVED value for the OTHER breakpoint
+      const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
+      const baseCameraPos = config.camera?.position;
+
+      // Use base camera value for the other breakpoint, or default
+      let otherValue: [number, number, number];
+      if (baseCameraPos && !Array.isArray(baseCameraPos)) {
+        otherValue = baseCameraPos[otherBreakpoint] || [0, 0, 5];
+      } else if (Array.isArray(baseCameraPos)) {
+        otherValue = baseCameraPos;
+      } else {
+        otherValue = [0, 0, 5];
+      }
+
       updatedPosition = {
-        mobile: previewMode === 'mobile' ? newPos : currentPos,
-        desktop: previewMode === 'desktop' ? newPos : currentPos,
+        mobile: previewMode === 'mobile' ? newPos : otherValue,
+        desktop: previewMode === 'desktop' ? newPos : otherValue,
       };
     } else if (currentPos && typeof currentPos === 'object') {
       updatedPosition = {
@@ -210,9 +446,24 @@ export const ConfiguratorApp: React.FC = () => {
     if (newTarget === undefined) {
       updatedTarget = undefined;
     } else if (Array.isArray(currentTarget)) {
+      // When converting from simple array to breakpoint object,
+      // we need to get the RESOLVED value for the OTHER breakpoint
+      const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
+      const baseCameraTarget = config.camera?.target;
+
+      // Use base camera value for the other breakpoint, or default
+      let otherValue: [number, number, number];
+      if (baseCameraTarget && !Array.isArray(baseCameraTarget)) {
+        otherValue = baseCameraTarget[otherBreakpoint] || [0, 0, 0];
+      } else if (Array.isArray(baseCameraTarget)) {
+        otherValue = baseCameraTarget;
+      } else {
+        otherValue = [0, 0, 0];
+      }
+
       updatedTarget = {
-        mobile: previewMode === 'mobile' ? newTarget : currentTarget,
-        desktop: previewMode === 'desktop' ? newTarget : currentTarget,
+        mobile: previewMode === 'mobile' ? newTarget : otherValue,
+        desktop: previewMode === 'desktop' ? newTarget : otherValue,
       };
     } else if (currentTarget && typeof currentTarget === 'object') {
       updatedTarget = {
@@ -229,6 +480,100 @@ export const ConfiguratorApp: React.FC = () => {
       camera: {
         ...keyframe.camera,
         target: updatedTarget,
+      },
+    });
+  };
+
+  const setKeyframeCameraFov = (index: number, newFov: number | undefined) => {
+    const keyframe = config.keyframes[index];
+    const currentFov = keyframe.camera?.fov;
+
+    let updatedFov: any;
+
+    if (newFov === undefined) {
+      updatedFov = undefined;
+    } else if (typeof currentFov === 'number') {
+      // When converting from simple number to breakpoint object,
+      // we need to get the RESOLVED value for the OTHER breakpoint
+      const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
+      const baseCameraFov = config.camera?.fov;
+
+      // Use base camera value for the other breakpoint, or default
+      let otherValue: number;
+      if (baseCameraFov && typeof baseCameraFov === 'object') {
+        otherValue = baseCameraFov[otherBreakpoint] || 50;
+      } else if (typeof baseCameraFov === 'number') {
+        otherValue = baseCameraFov;
+      } else {
+        otherValue = 50;
+      }
+
+      updatedFov = {
+        mobile: previewMode === 'mobile' ? newFov : otherValue,
+        desktop: previewMode === 'desktop' ? newFov : otherValue,
+      };
+    } else if (currentFov && typeof currentFov === 'object') {
+      updatedFov = {
+        ...currentFov,
+        [previewMode]: newFov,
+      };
+    } else {
+      updatedFov = {
+        [previewMode]: newFov,
+      };
+    }
+
+    updateKeyframe(index, {
+      camera: {
+        ...keyframe.camera,
+        fov: updatedFov,
+      },
+    });
+  };
+
+  const setKeyframeCameraZoom = (index: number, newZoom: number | undefined) => {
+    const keyframe = config.keyframes[index];
+    const currentZoom = keyframe.camera?.zoom;
+
+    let updatedZoom: any;
+
+    if (newZoom === undefined) {
+      updatedZoom = undefined;
+    } else if (typeof currentZoom === 'number') {
+      // When converting from simple number to breakpoint object,
+      // we need to get the RESOLVED value for the OTHER breakpoint
+      const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
+      const baseCameraZoom = config.camera?.zoom;
+
+      // Use base camera value for the other breakpoint, or default
+      let otherValue: number;
+      if (baseCameraZoom && typeof baseCameraZoom === 'object') {
+        otherValue = baseCameraZoom[otherBreakpoint] || 1;
+      } else if (typeof baseCameraZoom === 'number') {
+        otherValue = baseCameraZoom;
+      } else {
+        otherValue = 1;
+      }
+
+      updatedZoom = {
+        mobile: previewMode === 'mobile' ? newZoom : otherValue,
+        desktop: previewMode === 'desktop' ? newZoom : otherValue,
+      };
+    } else if (currentZoom && typeof currentZoom === 'object') {
+      updatedZoom = {
+        ...currentZoom,
+        [previewMode]: newZoom,
+      };
+    } else {
+      updatedZoom = {
+        [previewMode]: newZoom,
+      };
+    }
+
+    updateKeyframe(index, {
+      camera: {
+        ...keyframe.camera,
+        zoom: updatedZoom,
       },
     });
   };
@@ -332,6 +677,29 @@ export const ConfiguratorApp: React.FC = () => {
   };
 
   const selectedKeyframe = config.keyframes[selectedKeyframeIndex];
+
+  // Debug: Log camera values when they change
+  useEffect(() => {
+    console.log('[ConfiguratorApp] Camera config updated:', {
+      position: config.camera?.position,
+      target: config.camera?.target,
+      fov: config.camera?.fov,
+      zoom: config.camera?.zoom
+    });
+  }, [config.camera]);
+
+  // Debug: Log keyframe camera values when selected keyframe changes
+  useEffect(() => {
+    if (selectedKeyframe?.camera) {
+      console.log('[ConfiguratorApp] Selected keyframe camera:', {
+        index: selectedKeyframeIndex,
+        position: selectedKeyframe.camera.position,
+        target: selectedKeyframe.camera.target,
+        fov: selectedKeyframe.camera.fov,
+        zoom: selectedKeyframe.camera.zoom
+      });
+    }
+  }, [selectedKeyframe, selectedKeyframeIndex]);
 
   return (
     <div className="configurator-app">
@@ -534,21 +902,48 @@ const config = {
                 </div>
 
                 <div className="form-section">
-                  <h3>Camera Settings</h3>
-                  <p className="section-description">Configure default camera position. You can override these settings per keyframe in the Keyframes tab.</p>
+                  <h3>Camera Settings <span style={{ fontWeight: 'normal', color: '#667eea' }}>({previewMode})</span></h3>
+                  <p className="section-description">Configure default camera position for {previewMode}. You can override these settings per keyframe in the Keyframes tab.</p>
 
-                  <div className="form-group">
-                    <label>Field of View</label>
-                    <input
-                      type="number"
-                      value={config.camera?.fov ?? 50}
-                      onChange={(e) => setConfig(prev => ({
-                        ...prev,
-                        camera: { ...prev.camera!, fov: e.target.value === '' ? 0 : Number(e.target.value) }
-                      }))}
-                      min="10"
-                      max="120"
-                    />
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleCaptureCurrentView}
+                    style={{ width: '100%', marginBottom: '1.5rem' }}
+                  >
+                    📸 Capture Current View
+                  </button>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Field of View</label>
+                      <input
+                        type="number"
+                        value={getCameraFov()}
+                        onChange={(e) => {
+                          const newFov = e.target.value === '' ? 50 : Number(e.target.value);
+                          setCameraFov(newFov);
+                        }}
+                        min="10"
+                        max="120"
+                      />
+                      <small>Field of view for {previewMode}</small>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Zoom</label>
+                      <input
+                        type="number"
+                        value={getCameraZoom()}
+                        onChange={(e) => {
+                          const newZoom = e.target.value === '' ? 1 : Number(e.target.value);
+                          setCameraZoom(newZoom);
+                        }}
+                        min="0.1"
+                        max="10"
+                        step="0.1"
+                      />
+                      <small>Zoom multiplier for {previewMode} (1.0 = normal)</small>
+                    </div>
                   </div>
 
                   <h4>Camera Position</h4>
@@ -682,7 +1077,14 @@ const config = {
                       <button
                         key={index}
                         className={`keyframe-chip ${selectedKeyframeIndex === index ? 'active' : ''}`}
-                        onClick={() => setSelectedKeyframeIndex(index)}
+                        onClick={() => {
+                          console.log('[ConfiguratorApp] Keyframe chip clicked, index:', index, 'frame:', kf.frame);
+                          setSelectedKeyframeIndex(index);
+                          // Animate the preview to this keyframe
+                          if (productCard3DRef.current) {
+                            productCard3DRef.current.jumpToKeyframe(index);
+                          }
+                        }}
                       >
                         {kf.frame}
                       </button>
@@ -761,40 +1163,45 @@ const config = {
                       <h4>Camera Settings (Optional) <span style={{ fontWeight: 'normal', color: '#667eea' }}>({previewMode})</span></h4>
                       <p className="form-help">Override camera position/angle for this keyframe on {previewMode}. Use the Desktop/Mobile switch above to configure each separately.</p>
 
+                      <button
+                        className="btn btn-primary"
+                        onClick={handleCaptureCurrentView}
+                        style={{ width: '100%', marginBottom: '1.5rem' }}
+                      >
+                        📸 Capture Current View
+                      </button>
+
                       <div className="form-group">
                         <label>Field of View</label>
                         <input
                           type="number"
-                          value={selectedKeyframe.camera?.fov ?? ''}
-                          onChange={(e) => updateKeyframe(selectedKeyframeIndex, {
-                            camera: {
-                              ...selectedKeyframe.camera,
-                              fov: e.target.value === '' ? undefined : Number(e.target.value)
-                            }
-                          })}
+                          value={getKeyframeCameraFov(selectedKeyframe) ?? ''}
+                          onChange={(e) => {
+                            const newFov = e.target.value === '' ? undefined : Number(e.target.value);
+                            setKeyframeCameraFov(selectedKeyframeIndex, newFov);
+                          }}
                           placeholder="50"
                           min="10"
                           max="120"
                         />
+                        <small>Field of view for {previewMode}</small>
                       </div>
 
                       <div className="form-group">
                         <label>Zoom</label>
                         <input
                           type="number"
-                          value={selectedKeyframe.camera?.zoom ?? ''}
-                          onChange={(e) => updateKeyframe(selectedKeyframeIndex, {
-                            camera: {
-                              ...selectedKeyframe.camera,
-                              zoom: e.target.value === '' ? undefined : Number(e.target.value)
-                            }
-                          })}
+                          value={getKeyframeCameraZoom(selectedKeyframe) ?? ''}
+                          onChange={(e) => {
+                            const newZoom = e.target.value === '' ? undefined : Number(e.target.value);
+                            setKeyframeCameraZoom(selectedKeyframeIndex, newZoom);
+                          }}
                           placeholder="1.0"
                           step="0.1"
                           min="0.1"
                           max="10"
                         />
-                        <small>Camera zoom multiplier (1.0 = normal)</small>
+                        <small>Camera zoom multiplier for {previewMode} (1.0 = normal)</small>
                       </div>
 
                       <h5>Camera Position</h5>
@@ -1171,9 +1578,11 @@ const config = {
 
         <div className={`configurator-preview configurator-preview--${previewMode}`}>
           <ProductCard3D
+            ref={productCard3DRef}
             config={config}
             width={previewMode === 'mobile' ? '390px' : '1408px'}
             height={previewMode === 'mobile' ? '667px' : '700px'}
+            enableOrbitControls={true}
           />
         </div>
       </div>

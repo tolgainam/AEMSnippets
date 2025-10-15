@@ -76,10 +76,23 @@ export const useResponsiveCamera = (camera?: CameraConfig, forceMobile?: boolean
     [0, 0, 0] as [number, number, number]
   );
 
+  const fov = getCameraValue(
+    camera?.fov,
+    isMobile,
+    50
+  );
+
+  const zoom = getCameraValue(
+    camera?.zoom,
+    isMobile,
+    1
+  );
+
   return {
     position,
     target,
-    fov: camera?.fov || 50,
+    fov,
+    zoom,
     isMobile,
   };
 };
