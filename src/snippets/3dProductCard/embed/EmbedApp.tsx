@@ -2,22 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { ProductCard3D } from '../components/ProductCard3D';
 import type { ProductCard3DConfig } from '../types/config';
 import './EmbedApp.css';
+import sampleModel from '../assets/eagle.glb?url';
 
 const EmbedApp: React.FC = () => {
   const [config, setConfig] = useState<ProductCard3DConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(
-    typeof window !== 'undefined' ? window.innerWidth : 1024
-  );
+  const [containerSize, setContainerSize] = useState<{ width: number; height: number }>({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1024,
+    height: typeof window !== 'undefined' ? window.innerHeight : 600
+  });
 
   // Handle window resize for responsive behavior
+  // In an iframe, window.innerWidth/innerHeight reflects the iframe's size
   useEffect(() => {
-    const handleResize = () => {
-      setContainerWidth(window.innerWidth);
+    const updateSize = () => {
+      setContainerSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    // Set initial size
+    updateSize();
+
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
   }, []);
 
   useEffect(() => {
@@ -130,6 +139,16 @@ const EmbedApp: React.FC = () => {
         return;
       }
 
+      // Replace placeholder model path with local dev model for development/testing
+      if (parsedConfig.modelPath && (
+        parsedConfig.modelPath.includes('your-cdn.com') ||
+        parsedConfig.modelPath.includes('example.com') ||
+        parsedConfig.modelPath === 'https://your-cdn.com/path/to/model.glb'
+      )) {
+        console.log('[EmbedApp] Replacing placeholder model path with local dev model');
+        parsedConfig.modelPath = sampleModel;
+      }
+
       setConfig(parsedConfig);
     } catch (err) {
       setError(`Failed to parse configuration: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -191,16 +210,66 @@ const EmbedApp: React.FC = () => {
     );
   }
 
+  // Check if debug mode is enabled via URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const debugMode = urlParams.get('debug') === 'true';
+
   return (
     <div className="embed-container">
       <ProductCard3D
         config={config}
-        width={containerWidth}
-        height="100vh"
+        width={containerSize.width}
+        height={containerSize.height}
         onButtonClick={(url) => {
           window.parent.postMessage({ type: 'buttonClick', url }, '*');
         }}
+        onAnimationChange={(keyframeIndex, isPlaying) => {
+          if (debugMode) {
+            console.log('[EmbedApp] Animation change:', { keyframeIndex, isPlaying });
+            const keyframe = config.keyframes[keyframeIndex];
+            if (keyframe) {
+              console.log('[EmbedApp] Current keyframe:', {
+                frame: keyframe.frame,
+                title: keyframe.title,
+                camera: keyframe.camera
+              });
+            }
+          }
+        }}
       />
+
+      {debugMode && (
+        <div className="debug-overlay">
+          <div className="debug-panel">
+            <h3>🐛 Debug Info</h3>
+            <div className="debug-info">
+              <strong>Container:</strong> {containerSize.width}x{containerSize.height}<br />
+              <strong>Is Mobile:</strong> {containerSize.width <= 768 ? 'Yes (≤768px)' : 'No (>768px)'}<br />
+              <strong>Breakpoint:</strong> {containerSize.width <= 768 ? 'Mobile' : 'Desktop'}<br />
+              <strong>Keyframes:</strong> {config.keyframes.length}<br />
+              <strong>Model:</strong> {config.modelPath.split('/').pop()}<br />
+              <strong>Base Camera (Defaults):</strong><br />
+              <span style={{ fontSize: '10px', marginLeft: '10px' }}>
+                Position: {JSON.stringify(config.camera?.position)}<br />
+                Target: {JSON.stringify(config.camera?.target)}<br />
+                FOV: {JSON.stringify(config.camera?.fov)}<br />
+                Zoom: {JSON.stringify(config.camera?.zoom)}
+              </span>
+            </div>
+            <div className="debug-keyframes">
+              <strong>Keyframe Cameras:</strong>
+              {config.keyframes.map((kf, i) => (
+                <details key={i} style={{ marginTop: '8px' }}>
+                  <summary>Frame {kf.frame}: {kf.title}</summary>
+                  <pre style={{ fontSize: '10px', overflow: 'auto', maxHeight: '150px' }}>
+                    {JSON.stringify(kf.camera || 'No camera override', null, 2)}
+                  </pre>
+                </details>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,19 +1,27 @@
-body {
+html, body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 
+#root {
+  width: 100%;
+  height: 100%;
+}
+
 .embed-container {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   margin: 0;
   padding: 0;
+  position: relative;
 }
 
 .embed-loading {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,14 +32,15 @@ body {
 }
 
 .embed-error {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #1a1a1a;
   color: #ffffff;
   padding: 2rem;
+  box-sizing: border-box;
 }
 
 .embed-error__content {
@@ -79,4 +88,81 @@ body {
 
 .embed-error__content summary:hover {
   color: #4ecdc4;
+}
+
+/* Debug overlay */
+.debug-overlay {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.debug-panel {
+  background: rgba(0, 0, 0, 0.95);
+  color: #0f0;
+  padding: 12px;
+  border-radius: 8px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 11px;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  pointer-events: auto;
+  border: 2px solid #0f0;
+  box-shadow: 0 4px 12px rgba(0, 255, 0, 0.3);
+}
+
+.debug-panel h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #0ff;
+  border-bottom: 1px solid #0f0;
+  padding-bottom: 8px;
+}
+
+.debug-info {
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.debug-info strong {
+  color: #ff0;
+}
+
+.debug-keyframes {
+  margin-top: 12px;
+}
+
+.debug-keyframes strong {
+  color: #ff0;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.debug-keyframes details {
+  background: rgba(0, 255, 0, 0.05);
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.debug-keyframes summary {
+  cursor: pointer;
+  color: #0ff;
+  font-weight: bold;
+}
+
+.debug-keyframes summary:hover {
+  color: #fff;
+}
+
+.debug-keyframes pre {
+  color: #0f0;
+  margin: 8px 0 0 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  overflow-x: auto;
 }

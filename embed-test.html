@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Product Card Embed Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .container {
+      max-width: calc(100vw - 2rem);
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    .instructions {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .code-input {
+      width: 100%;
+      min-height: 120px;
+      padding: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.9rem;
+      resize: vertical;
+    }
+
+    .code-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+
+    .preview-container {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow-x: auto;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .preview-header h2 {
+      color: #333;
+    }
+
+    .size-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .size-controls label {
+      color: #666;
+      font-size: 0.9rem;
+      margin-right: 0.5rem;
+    }
+
+    .size-controls input {
+      width: 80px;
+      padding: 0.5rem;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .iframe-wrapper {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f5f5f5;
+      position: relative;
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .iframe-wrapper::before {
+      content: 'iframe boundary';
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: rgba(102, 126, 234, 0.9);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    #preview-iframe {
+      width: 100%;
+      border: none;
+      display: block;
+    }
+
+    .error-message {
+      background: #fee;
+      border: 2px solid #fcc;
+      color: #c00;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 4px;
+    }
+
+    .info-box strong {
+      color: #1976d2;
+    }
+
+    .info-box code {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.85rem;
+    }
+
+    .debug-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: #f9f9f9;
+      border-radius: 6px;
+    }
+
+    .debug-toggle input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .debug-toggle label {
+      cursor: pointer;
+      font-weight: 500;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧪 3D Product Card Embed Test</h1>
+      <p class="instructions">
+        Paste your iframe embed code below to test it in a real iframe environment.
+        This will help debug camera position and styling issues.
+      </p>
+
+      <textarea
+        id="embed-code"
+        class="code-input"
+        placeholder='<iframe src="https://tolgainam.github.io/AEMSnippets/3dProductCard/embed.html?config=..." width="100%" height="600"></iframe>'
+      ></textarea>
+
+      <div class="button-group">
+        <button class="btn-primary" onclick="loadEmbed()">Load Embed</button>
+        <button class="btn-secondary" onclick="clearEmbed()">Clear</button>
+      </div>
+
+      <div class="debug-toggle">
+        <input type="checkbox" id="debug-mode" onchange="loadEmbed()">
+        <label for="debug-mode">Enable Debug Mode (shows camera values & keyframe info)</label>
+      </div>
+
+      <div id="error-message" class="error-message"></div>
+
+      <div class="info-box">
+        <strong>Quick Test:</strong> Go to the configurator, click <code>Generate Embed Code</code>,
+        then paste the iframe code here to see how it actually renders when embedded.
+      </div>
+    </div>
+
+    <div class="preview-container">
+      <div class="preview-header">
+        <h2>Preview</h2>
+        <div class="size-controls">
+          <label>Width:</label>
+          <input type="number" id="iframe-width" value="1200" min="300" max="3000" step="10" onchange="updateIframeSize()">
+          <label>Height:</label>
+          <input type="number" id="iframe-height" value="600" min="300" max="1500" step="10" onchange="updateIframeSize()">
+        </div>
+      </div>
+
+      <div class="iframe-wrapper">
+        <iframe id="preview-iframe" height="600"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function loadEmbed() {
+      const embedCode = document.getElementById('embed-code').value.trim();
+      const errorMsg = document.getElementById('error-message');
+      const iframe = document.getElementById('preview-iframe');
+      const debugMode = document.getElementById('debug-mode').checked;
+
+      errorMsg.style.display = 'none';
+
+      if (!embedCode) {
+        errorMsg.textContent = 'Please paste an iframe embed code';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      // Parse iframe src from the embed code
+      const srcMatch = embedCode.match(/src=["']([^"']+)["']/);
+      if (!srcMatch) {
+        errorMsg.textContent = 'Could not find iframe src in the embed code';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      const src = srcMatch[1];
+      console.log('Loading embed from:', src);
+
+      // For local testing, replace the production URL with localhost
+      let finalSrc = src;
+      if (src.includes('tolgainam.github.io') && window.location.hostname === 'localhost') {
+        finalSrc = src.replace(
+          'https://tolgainam.github.io/AEMSnippets',
+          window.location.origin + '/AEMSnippets'
+        );
+        console.log('Using local URL:', finalSrc);
+      }
+
+      // Add debug parameter if debug mode is enabled
+      if (debugMode) {
+        const separator = finalSrc.includes('?') ? '&' : '?';
+        finalSrc = finalSrc + separator + 'debug=true';
+        console.log('Debug mode enabled:', finalSrc);
+      }
+
+      iframe.src = finalSrc;
+    }
+
+    function clearEmbed() {
+      document.getElementById('embed-code').value = '';
+      document.getElementById('preview-iframe').src = '';
+      document.getElementById('error-message').style.display = 'none';
+    }
+
+    function updateIframeSize() {
+      const width = document.getElementById('iframe-width').value;
+      const height = document.getElementById('iframe-height').value;
+      const iframe = document.getElementById('preview-iframe');
+
+      iframe.style.width = width + 'px';
+      iframe.style.height = height + 'px';
+    }
+
+    // Initialize iframe size
+    updateIframeSize();
+  </script>
+</body>
+</html>

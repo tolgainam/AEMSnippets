@@ -397,36 +397,49 @@ export const ConfiguratorApp: React.FC = () => {
     let updatedPosition: any;
 
     if (newPos === undefined) {
-      updatedPosition = undefined;
+      // When clearing, preserve other breakpoint if it exists
+      if (currentPos && typeof currentPos === 'object' && !Array.isArray(currentPos)) {
+        const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
+        if (currentPos[otherBreakpoint] !== undefined) {
+          // Keep the other breakpoint, remove current
+          updatedPosition = { ...currentPos };
+          delete updatedPosition[previewMode];
+          // If both are gone, set to undefined
+          if (Object.keys(updatedPosition).length === 0) {
+            updatedPosition = undefined;
+          }
+        } else {
+          updatedPosition = undefined;
+        }
+      } else {
+        updatedPosition = undefined;
+      }
     } else if (Array.isArray(currentPos)) {
       // When converting from simple array to breakpoint object,
-      // we need to get the RESOLVED value for the OTHER breakpoint
-      const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
-      const baseCameraPos = config.camera?.position;
-
-      // Use base camera value for the other breakpoint, or default
-      let otherValue: [number, number, number];
-      if (baseCameraPos && !Array.isArray(baseCameraPos)) {
-        otherValue = baseCameraPos[otherBreakpoint] || [0, 0, 5];
-      } else if (Array.isArray(baseCameraPos)) {
-        otherValue = baseCameraPos;
-      } else {
-        otherValue = [0, 0, 5];
-      }
-
+      // preserve the simple array for the other breakpoint
       updatedPosition = {
-        mobile: previewMode === 'mobile' ? newPos : otherValue,
-        desktop: previewMode === 'desktop' ? newPos : otherValue,
+        mobile: previewMode === 'mobile' ? newPos : currentPos,
+        desktop: previewMode === 'desktop' ? newPos : currentPos,
       };
     } else if (currentPos && typeof currentPos === 'object') {
+      // Already breakpoint-specific, just update current breakpoint
       updatedPosition = {
         ...currentPos,
         [previewMode]: newPos,
       };
     } else {
-      updatedPosition = {
-        [previewMode]: newPos,
-      };
+      // currentPos is undefined - check if there's already a breakpoint value we should preserve
+      if (keyframe.camera?.position && typeof keyframe.camera.position === 'object' && !Array.isArray(keyframe.camera.position)) {
+        updatedPosition = {
+          ...keyframe.camera.position,
+          [previewMode]: newPos,
+        };
+      } else {
+        // Create new breakpoint-specific object with only current breakpoint
+        updatedPosition = {
+          [previewMode]: newPos,
+        };
+      }
     }
 
     updateKeyframe(index, {
@@ -444,36 +457,49 @@ export const ConfiguratorApp: React.FC = () => {
     let updatedTarget: any;
 
     if (newTarget === undefined) {
-      updatedTarget = undefined;
+      // When clearing, preserve other breakpoint if it exists
+      if (currentTarget && typeof currentTarget === 'object' && !Array.isArray(currentTarget)) {
+        const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
+        if (currentTarget[otherBreakpoint] !== undefined) {
+          // Keep the other breakpoint, remove current
+          updatedTarget = { ...currentTarget };
+          delete updatedTarget[previewMode];
+          // If both are gone, set to undefined
+          if (Object.keys(updatedTarget).length === 0) {
+            updatedTarget = undefined;
+          }
+        } else {
+          updatedTarget = undefined;
+        }
+      } else {
+        updatedTarget = undefined;
+      }
     } else if (Array.isArray(currentTarget)) {
       // When converting from simple array to breakpoint object,
-      // we need to get the RESOLVED value for the OTHER breakpoint
-      const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
-      const baseCameraTarget = config.camera?.target;
-
-      // Use base camera value for the other breakpoint, or default
-      let otherValue: [number, number, number];
-      if (baseCameraTarget && !Array.isArray(baseCameraTarget)) {
-        otherValue = baseCameraTarget[otherBreakpoint] || [0, 0, 0];
-      } else if (Array.isArray(baseCameraTarget)) {
-        otherValue = baseCameraTarget;
-      } else {
-        otherValue = [0, 0, 0];
-      }
-
+      // preserve the simple array for the other breakpoint
       updatedTarget = {
-        mobile: previewMode === 'mobile' ? newTarget : otherValue,
-        desktop: previewMode === 'desktop' ? newTarget : otherValue,
+        mobile: previewMode === 'mobile' ? newTarget : currentTarget,
+        desktop: previewMode === 'desktop' ? newTarget : currentTarget,
       };
     } else if (currentTarget && typeof currentTarget === 'object') {
+      // Already breakpoint-specific, just update current breakpoint
       updatedTarget = {
         ...currentTarget,
         [previewMode]: newTarget,
       };
     } else {
-      updatedTarget = {
-        [previewMode]: newTarget,
-      };
+      // currentTarget is undefined - check if there's already a breakpoint value we should preserve
+      if (keyframe.camera?.target && typeof keyframe.camera.target === 'object' && !Array.isArray(keyframe.camera.target)) {
+        updatedTarget = {
+          ...keyframe.camera.target,
+          [previewMode]: newTarget,
+        };
+      } else {
+        // Create new breakpoint-specific object with only current breakpoint
+        updatedTarget = {
+          [previewMode]: newTarget,
+        };
+      }
     }
 
     updateKeyframe(index, {
@@ -491,36 +517,49 @@ export const ConfiguratorApp: React.FC = () => {
     let updatedFov: any;
 
     if (newFov === undefined) {
-      updatedFov = undefined;
+      // When clearing, preserve other breakpoint if it exists
+      if (currentFov && typeof currentFov === 'object') {
+        const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
+        if (currentFov[otherBreakpoint] !== undefined) {
+          // Keep the other breakpoint, remove current
+          updatedFov = { ...currentFov };
+          delete updatedFov[previewMode];
+          // If both are gone, set to undefined
+          if (Object.keys(updatedFov).length === 0) {
+            updatedFov = undefined;
+          }
+        } else {
+          updatedFov = undefined;
+        }
+      } else {
+        updatedFov = undefined;
+      }
     } else if (typeof currentFov === 'number') {
       // When converting from simple number to breakpoint object,
-      // we need to get the RESOLVED value for the OTHER breakpoint
-      const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
-      const baseCameraFov = config.camera?.fov;
-
-      // Use base camera value for the other breakpoint, or default
-      let otherValue: number;
-      if (baseCameraFov && typeof baseCameraFov === 'object') {
-        otherValue = baseCameraFov[otherBreakpoint] || 50;
-      } else if (typeof baseCameraFov === 'number') {
-        otherValue = baseCameraFov;
-      } else {
-        otherValue = 50;
-      }
-
+      // preserve the simple number for the other breakpoint
       updatedFov = {
-        mobile: previewMode === 'mobile' ? newFov : otherValue,
-        desktop: previewMode === 'desktop' ? newFov : otherValue,
+        mobile: previewMode === 'mobile' ? newFov : currentFov,
+        desktop: previewMode === 'desktop' ? newFov : currentFov,
       };
     } else if (currentFov && typeof currentFov === 'object') {
+      // Already breakpoint-specific, just update current breakpoint
       updatedFov = {
         ...currentFov,
         [previewMode]: newFov,
       };
     } else {
-      updatedFov = {
-        [previewMode]: newFov,
-      };
+      // currentFov is undefined - check if there's already a breakpoint value we should preserve
+      if (keyframe.camera?.fov && typeof keyframe.camera.fov === 'object') {
+        updatedFov = {
+          ...keyframe.camera.fov,
+          [previewMode]: newFov,
+        };
+      } else {
+        // Create new breakpoint-specific object with only current breakpoint
+        updatedFov = {
+          [previewMode]: newFov,
+        };
+      }
     }
 
     updateKeyframe(index, {
@@ -538,36 +577,52 @@ export const ConfiguratorApp: React.FC = () => {
     let updatedZoom: any;
 
     if (newZoom === undefined) {
-      updatedZoom = undefined;
+      // When clearing, preserve other breakpoint if it exists
+      if (currentZoom && typeof currentZoom === 'object' && !Array.isArray(currentZoom)) {
+        const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
+        if (currentZoom[otherBreakpoint] !== undefined) {
+          // Keep the other breakpoint, remove current
+          updatedZoom = { ...currentZoom };
+          delete updatedZoom[previewMode];
+          // If both are gone, set to undefined
+          if (Object.keys(updatedZoom).length === 0) {
+            updatedZoom = undefined;
+          }
+        } else {
+          updatedZoom = undefined;
+        }
+      } else {
+        updatedZoom = undefined;
+      }
     } else if (typeof currentZoom === 'number') {
       // When converting from simple number to breakpoint object,
-      // we need to get the RESOLVED value for the OTHER breakpoint
-      const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
-      const baseCameraZoom = config.camera?.zoom;
-
-      // Use base camera value for the other breakpoint, or default
-      let otherValue: number;
-      if (baseCameraZoom && typeof baseCameraZoom === 'object') {
-        otherValue = baseCameraZoom[otherBreakpoint] || 1;
-      } else if (typeof baseCameraZoom === 'number') {
-        otherValue = baseCameraZoom;
-      } else {
-        otherValue = 1;
-      }
-
+      // preserve the simple number for the other breakpoint
       updatedZoom = {
-        mobile: previewMode === 'mobile' ? newZoom : otherValue,
-        desktop: previewMode === 'desktop' ? newZoom : otherValue,
+        mobile: previewMode === 'mobile' ? newZoom : currentZoom,
+        desktop: previewMode === 'desktop' ? newZoom : currentZoom,
       };
-    } else if (currentZoom && typeof currentZoom === 'object') {
+    } else if (currentZoom && typeof currentZoom === 'object' && !Array.isArray(currentZoom)) {
+      // Already breakpoint-specific, just update current breakpoint
       updatedZoom = {
         ...currentZoom,
         [previewMode]: newZoom,
       };
     } else {
-      updatedZoom = {
-        [previewMode]: newZoom,
-      };
+      // currentZoom is undefined - check if there's already a breakpoint value we should preserve
+      const otherBreakpoint = previewMode === 'mobile' ? 'desktop' : 'mobile';
+
+      // If the keyframe already has a breakpoint-specific zoom from a previous action, preserve it
+      if (keyframe.camera?.zoom && typeof keyframe.camera.zoom === 'object' && !Array.isArray(keyframe.camera.zoom)) {
+        updatedZoom = {
+          ...keyframe.camera.zoom,
+          [previewMode]: newZoom,
+        };
+      } else {
+        // Create new breakpoint-specific object with only current breakpoint
+        updatedZoom = {
+          [previewMode]: newZoom,
+        };
+      }
     }
 
     updateKeyframe(index, {
@@ -605,6 +660,16 @@ export const ConfiguratorApp: React.FC = () => {
     reader.onload = (e) => {
       try {
         const imported = JSON.parse(e.target?.result as string);
+
+        // Replace production placeholder URL with local dev path
+        if (imported.modelPath && (
+          imported.modelPath.includes('your-cdn.com') ||
+          imported.modelPath.includes('example.com') ||
+          imported.modelPath === 'https://your-cdn.com/path/to/model.glb'
+        )) {
+          imported.modelPath = sampleModel;
+        }
+
         setConfig(imported);
       } catch (err) {
         alert('Invalid configuration file');
