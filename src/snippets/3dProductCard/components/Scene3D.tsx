@@ -24,6 +24,11 @@ interface Scene3DProps {
   } | null) | null>;
 }
 
+// Utility function to round numbers to 4 decimal places
+const roundToDecimal = (num: number, decimals: number = 4): number => {
+  return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
+};
+
 const Scene3DComponent: React.FC<Scene3DProps> = ({
   modelPath,
   currentFrame,
@@ -55,21 +60,29 @@ const Scene3DComponent: React.FC<Scene3DProps> = ({
         }
 
         const pos = threeCamera.position;
-        const position: [number, number, number] = [pos.x, pos.y, pos.z];
+        const position: [number, number, number] = [
+          roundToDecimal(pos.x),
+          roundToDecimal(pos.y),
+          roundToDecimal(pos.z)
+        ];
         console.log('[Scene3D] Camera position:', position);
 
         // Get target from OrbitControls if available, otherwise use lookAt direction
         let target: [number, number, number] = [0, 0, 0];
         if (orbitControlsRef.current?.target) {
           const tgt = orbitControlsRef.current.target;
-          target = [tgt.x, tgt.y, tgt.z];
+          target = [
+            roundToDecimal(tgt.x),
+            roundToDecimal(tgt.y),
+            roundToDecimal(tgt.z)
+          ];
           console.log('[Scene3D] OrbitControls target:', target);
         } else {
           console.log('[Scene3D] No OrbitControls target, using default [0,0,0]');
         }
 
-        const fov = (threeCamera as any).fov || 50;
-        const zoom = (threeCamera as any).zoom || 1;
+        const fov = roundToDecimal((threeCamera as any).fov || 50);
+        const zoom = roundToDecimal((threeCamera as any).zoom || 1);
         console.log('[Scene3D] FOV:', fov, 'Zoom:', zoom);
 
         const result = { position, target, fov, zoom };
@@ -136,6 +149,19 @@ const Scene3DComponent: React.FC<Scene3DProps> = ({
       threeCamera.rotation.z = camera.rotation[2];
     }
   }, [camera, threeCamera, enableOrbitControls]);
+
+  // Update zoom and fov ALWAYS (even when OrbitControls is enabled)
+  // These don't conflict with OrbitControls positioning
+  useEffect(() => {
+    if (camera?.zoom !== undefined) {
+      (threeCamera as any).zoom = camera.zoom;
+      threeCamera.updateProjectionMatrix();
+    }
+    if (camera?.fov !== undefined) {
+      (threeCamera as any).fov = camera.fov;
+      threeCamera.updateProjectionMatrix();
+    }
+  }, [camera?.zoom, camera?.fov, threeCamera]);
 
   // Update animation frame
   useEffect(() => {
