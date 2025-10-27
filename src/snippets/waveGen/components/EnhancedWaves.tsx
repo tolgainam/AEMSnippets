@@ -1,20 +1,8 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo } from 'react';
 
 // Linear interpolation function
 const lerp = (a: number, b: number, t: number): number => {
   return a + t * (b - a);
-};
-
-// Function to convert a hexadecimal color to RGBA
-const hexToRgba = (hex: string, alpha: number = 1): string => {
-  if (hex[0] === "#") {
-    hex = hex.slice(1);
-  }
-  const bigint = parseInt(hex, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
 export interface EnhancedWavesProps extends React.CanvasHTMLAttributes<HTMLCanvasElement> {
@@ -45,6 +33,21 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const targetAmplitudeRef = useRef(amplitude);
 
+  // Cache RGBA color conversions to avoid recalculating every frame
+  const rgbaColors = useMemo(() => {
+    return colors.map(color => {
+      if (color[0] === "#") {
+        const hex = color.slice(1);
+        const bigint = parseInt(hex, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return { r, g, b };
+      }
+      return { r: 0, g: 0, b: 0 };
+    });
+  }, [colors]);
+
   // Update the target amplitude whenever the amplitude prop changes
   useEffect(() => {
     targetAmplitudeRef.current = amplitude;
@@ -70,8 +73,9 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
     ctx.lineWidth = lineWidth;
     ctx.beginPath();
 
-    // Draw the waveform
-    for (let i = 0; i < ctx.canvas.width; i++) {
+    // Draw the waveform with optimized sampling (every 3 pixels)
+    const step = 3;
+    for (let i = 0; i < ctx.canvas.width; i += step) {
       // Compute the pinching effect
       const sineWave = Math.sin(Math.PI * (i / ctx.canvas.width));
       const pinch = Math.pow(sineWave, 6);
@@ -154,12 +158,15 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
         },
       ];
 
+      // Calculate time once per frame instead of multiple times
+      const currentTime = Date.now();
+
       // For each primary waveform, draw the waveform and its surrounding mesh
       for (const primary of primaryWaveforms) {
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        const stopIncrement = colors.length > 1 ? 1 / (colors.length - 1) : 0;
-        colors.forEach((color, index) => {
-          gradient.addColorStop(stopIncrement * index, hexToRgba(color, primary.alpha));
+        const stopIncrement = rgbaColors.length > 1 ? 1 / (rgbaColors.length - 1) : 0;
+        rgbaColors.forEach((color, index) => {
+          gradient.addColorStop(stopIncrement * index, `rgba(${color.r}, ${color.g}, ${color.b}, ${primary.alpha})`);
         });
 
         drawWaveform(
@@ -167,21 +174,21 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
           primary.amplitude,
           primary.frequency,
           gradient,
-          Date.now() * primary.speed,
+          currentTime * primary.speed,
           turbulence,
           time
         );
 
         // Draw secondary waveforms around the primary waveform (mesh effect)
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 10; i++) {
           const amp = primary.amplitude - i * 0.1;
           const freq = primary.frequency + i * 0.00025;
           const alpha = primary.alpha * 0.6 - i * 0.01;
 
           const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-          const stopIncrement = colors.length > 1 ? 1 / (colors.length - 1) : 0;
-          colors.forEach((color, index) => {
-            gradient.addColorStop(stopIncrement * index, hexToRgba(color, alpha));
+          const stopIncrement = rgbaColors.length > 1 ? 1 / (rgbaColors.length - 1) : 0;
+          rgbaColors.forEach((color, index) => {
+            gradient.addColorStop(stopIncrement * index, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`);
           });
 
           drawWaveform(
@@ -189,7 +196,7 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
             amp,
             freq,
             gradient,
-            Date.now() * primary.speed + i * 0.015,
+            currentTime * primary.speed + i * 0.015,
             turbulence * 0.5, // Reduce turbulence for secondary waves
             time
           );
