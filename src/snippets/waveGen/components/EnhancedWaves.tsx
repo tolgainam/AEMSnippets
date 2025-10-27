@@ -100,10 +100,23 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const parent = canvas.parentElement;
-    if (parent) {
-      canvas.width = parent.clientWidth;
-    }
+    // Function to update canvas dimensions
+    const updateCanvasDimensions = () => {
+      const parent = canvas.parentElement;
+      if (parent) {
+        canvas.width = parent.clientWidth;
+      }
+    };
+
+    // Set initial dimensions
+    updateCanvasDimensions();
+
+    // Add resize listener to handle responsive behavior
+    const handleResize = () => {
+      updateCanvasDimensions();
+    };
+
+    window.addEventListener('resize', handleResize);
 
     const animate = () => {
       const time = Date.now() * 0.0015 * speed;
@@ -188,9 +201,10 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
 
     animate();
 
-    // Clean up the animation frame when the component unmounts
+    // Clean up the animation frame and resize listener when the component unmounts
     return () => {
       cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', handleResize);
     };
   }, [colors, drawWaveform, turbulence, amplitudeVariation, speed]);
 
