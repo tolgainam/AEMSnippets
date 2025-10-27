@@ -18,6 +18,7 @@ export interface WaveGenProps {
   amplitudeVariation?: number;
   lineWidth?: number;
   speed?: number;
+  gradientDirection?: 'horizontal' | 'vertical';
 }
 
 export const WaveGen: React.FC<WaveGenProps> = ({
@@ -35,6 +36,7 @@ export const WaveGen: React.FC<WaveGenProps> = ({
   amplitudeVariation = 0,
   lineWidth = 2,
   speed = 1,
+  gradientDirection = 'horizontal',
 }) => {
   // Get theme tokens for this brand
   const themeTokens = createThemeTokens(brand);
@@ -89,6 +91,7 @@ export const WaveGen: React.FC<WaveGenProps> = ({
           amplitudeVariation={amplitudeVariation}
           lineWidth={lineWidth}
           speed={speed}
+          gradientDirection={gradientDirection}
         />
       </div>
     </div>

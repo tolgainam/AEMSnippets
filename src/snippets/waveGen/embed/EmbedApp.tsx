@@ -15,6 +15,7 @@ interface EmbedConfig {
   amplitudeVariation: number;
   lineWidth: number;
   speed: number;
+  gradientDirection: 'horizontal' | 'vertical';
 }
 
 const EmbedApp: React.FC = () => {
@@ -31,6 +32,7 @@ const EmbedApp: React.FC = () => {
     amplitudeVariation: 0,
     lineWidth: 2,
     speed: 1,
+    gradientDirection: 'horizontal',
   });
 
   useEffect(() => {
@@ -92,6 +94,10 @@ const EmbedApp: React.FC = () => {
       newConfig.speed = parseFloat(urlParams.get('speed') || '1');
     }
 
+    if (urlParams.has('gradientDirection')) {
+      newConfig.gradientDirection = urlParams.get('gradientDirection') as 'horizontal' | 'vertical' || 'horizontal';
+    }
+
     setConfig(prevConfig => ({ ...prevConfig, ...newConfig }));
   }, []);
 
@@ -116,6 +122,7 @@ const EmbedApp: React.FC = () => {
         amplitudeVariation={config.amplitudeVariation}
         lineWidth={config.lineWidth}
         speed={config.speed}
+        gradientDirection={config.gradientDirection}
       />
     </div>
   );

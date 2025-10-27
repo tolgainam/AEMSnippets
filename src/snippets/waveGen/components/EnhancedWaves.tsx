@@ -18,6 +18,8 @@ export interface EnhancedWavesProps extends React.CanvasHTMLAttributes<HTMLCanva
   lineWidth?: number;
   /** Animation speed multiplier (0.1-5) */
   speed?: number;
+  /** Gradient direction: 'horizontal' or 'vertical' */
+  gradientDirection?: 'horizontal' | 'vertical';
 }
 
 export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
@@ -27,6 +29,7 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
   amplitudeVariation = 0,
   lineWidth = 2,
   speed = 1,
+  gradientDirection = 'horizontal',
   ...props
 }) => {
   const amplitudeRef = useRef(amplitude);
@@ -163,7 +166,11 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
 
       // For each primary waveform, draw the waveform and its surrounding mesh
       for (const primary of primaryWaveforms) {
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        // Create gradient based on direction
+        const gradient = gradientDirection === 'vertical'
+          ? ctx.createLinearGradient(0, 0, 0, canvas.height)
+          : ctx.createLinearGradient(0, 0, canvas.width, 0);
+
         const stopIncrement = rgbaColors.length > 1 ? 1 / (rgbaColors.length - 1) : 0;
         rgbaColors.forEach((color, index) => {
           gradient.addColorStop(stopIncrement * index, `rgba(${color.r}, ${color.g}, ${color.b}, ${primary.alpha})`);
@@ -185,7 +192,11 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
           const freq = primary.frequency + i * 0.00025;
           const alpha = primary.alpha * 0.6 - i * 0.01;
 
-          const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+          // Create gradient based on direction
+          const gradient = gradientDirection === 'vertical'
+            ? ctx.createLinearGradient(0, 0, 0, canvas.height)
+            : ctx.createLinearGradient(0, 0, canvas.width, 0);
+
           const stopIncrement = rgbaColors.length > 1 ? 1 / (rgbaColors.length - 1) : 0;
           rgbaColors.forEach((color, index) => {
             gradient.addColorStop(stopIncrement * index, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`);
@@ -213,7 +224,7 @@ export const EnhancedWaves: React.FC<EnhancedWavesProps> = ({
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
     };
-  }, [colors, drawWaveform, turbulence, amplitudeVariation, speed]);
+  }, [colors, drawWaveform, turbulence, amplitudeVariation, speed, gradientDirection, rgbaColors]);
 
   // Render the canvas
   return (

@@ -15,6 +15,7 @@ interface ConfigState {
   amplitudeVariation: number;
   lineWidth: number;
   speed: number;
+  gradientDirection: 'horizontal' | 'vertical';
 }
 
 const WaveGenDemo: React.FC = () => {
@@ -31,6 +32,7 @@ const WaveGenDemo: React.FC = () => {
     amplitudeVariation: 0,
     lineWidth: 2,
     speed: 1,
+    gradientDirection: 'horizontal',
   });
 
   const [newColor, setNewColor] = useState('#FF6AC6');
@@ -60,6 +62,7 @@ const WaveGenDemo: React.FC = () => {
       amplitudeVariation: config.amplitudeVariation.toString(),
       lineWidth: config.lineWidth.toString(),
       speed: config.speed.toString(),
+      gradientDirection: config.gradientDirection,
     });
 
     return `${window.location.origin}/AEMSnippets/waveGen/embed.html?${params.toString()}`;
@@ -143,6 +146,7 @@ const WaveGenDemo: React.FC = () => {
           amplitudeVariation={config.amplitudeVariation}
           lineWidth={config.lineWidth}
           speed={config.speed}
+          gradientDirection={config.gradientDirection}
         />
       </div>
 
@@ -172,6 +176,18 @@ const WaveGenDemo: React.FC = () => {
             >
               <option value="light">Light</option>
               <option value="dark">Dark</option>
+            </select>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '5px' }}>Gradient Direction:</label>
+            <select
+              value={config.gradientDirection}
+              onChange={(e) => setConfig(prev => ({ ...prev, gradientDirection: e.target.value as 'horizontal' | 'vertical' }))}
+              style={{ width: '100%', padding: '8px' }}
+            >
+              <option value="horizontal">Horizontal (Left to Right)</option>
+              <option value="vertical">Vertical (Top to Bottom)</option>
             </select>
           </div>
 
@@ -416,6 +432,7 @@ import { WaveGen } from 'aem-snippets/waveGen';
   amplitudeVariation={${config.amplitudeVariation}}
   lineWidth={${config.lineWidth}}
   speed={${config.speed}}
+  gradientDirection="${config.gradientDirection}"
 />`}
             </pre>
           </div>
